@@ -1,30 +1,35 @@
-import locale
+import inspect
+import os
+import subprocess
 import sys
 
+THIS_FILE = os.path.abspath(inspect.getsourcefile(lambda: None) or __file__)
+THIS_DIR = os.path.dirname(THIS_FILE)
 
-def make_unique(*objs):
-    return tuple(dict.fromkeys(x for x in objs if x is not None))
+if THIS_DIR not in sys.path:
+    sys.path.append(THIS_DIR)
 
-
-CODEC_LIST = make_unique(
-    # list of codecs to try, in order...
-    # use getattr because some stream wrappers (ie, houdinit's hou.ShellIO)
-    # may not have a .encoding attr
-    getattr(sys.stdout, "encoding", None),
-    getattr(sys.stderr, "encoding", None),
-    getattr(sys.stdin, "encoding", None),
-    getattr(sys.__stdout__, "encoding", None),
-    getattr(sys.__stderr__, "encoding", None),
-    getattr(sys.__stdin__, "encoding", None),
-    locale.getpreferredencoding(),
-    "utf8",
-)
+import luxtest_const
 
 
 def try_decode(input_bytes):
-    for codec in CODEC_LIST:
+    for codec in luxtest_const.CODEC_LIST:
         try:
             return input_bytes.decode(codec)
         except UnicodeDecodeError:
             pass
     return input_bytes
+
+
+def get_renders_root():
+    for test_path in luxtest_const.DEFAULT_RENDERS_ROOTS:
+        if os.path.isdir(test_path):
+            return test_path
+
+    # couldn't find the renders path - clone it
+    renders_root = luxtest_const.DEFAULT_RENDERS_ROOTS[0]
+    # don't fetch all blobs for faster clone
+    subprocess.run(["git", "clone", "--filter=blob:none", luxtest_const.DEFAULT_RENDERS_REPO_URL, renders_root])
+    if not os.path.isdir(renders_root):
+        raise RuntimeError(f"error cloning repo {luxtest_const.DEFAULT_RENDERS_REPO_URL!r} to {renders_root!r}")
+    return renders_root

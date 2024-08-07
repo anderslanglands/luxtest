@@ -15,9 +15,15 @@ from typing import Dict, Iterable, List, NamedTuple, Tuple
 THIS_FILE = os.path.abspath(inspect.getsourcefile(lambda: None) or __file__)
 THIS_DIR = os.path.dirname(THIS_FILE)
 
+if THIS_DIR not in sys.path:
+    sys.path.append(THIS_DIR)
+
+import luxtest_utils
+
 GEN_EMBREE = os.path.join(THIS_DIR, "genembree.py")
 DEFAULT_TEST_USDA = os.path.join(THIS_DIR, "usd", "test", "embree_test_01.usda")
-DEFAULT_OUTPUT_DIR = os.path.join(THIS_DIR, "renders", "test")
+RENDERS_ROOT = luxtest_utils.get_renders_root()
+DEFAULT_OUTPUT_DIR = os.path.join(RENDERS_ROOT, "test")
 
 ###############################################################################
 # Utilities

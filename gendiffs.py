@@ -39,8 +39,6 @@ import pip_import
 pip_import.pip_import("tqdm")
 import tqdm.asyncio
 
-RENDERS_DIR_NAME = "renders"
-RENDERS_ROOT = os.path.join(THIS_DIR, RENDERS_DIR_NAME)
 WEB_DIR_NAME = "web"
 WEB_ROOT = os.path.join(THIS_DIR, WEB_DIR_NAME)
 WEB_IMG_ROOT = os.path.join(WEB_ROOT, "img")
@@ -123,7 +121,7 @@ else:
 
 
 def normalize_concurrency(concurrency: int):
-    if concurrency < 0:
+    if concurrency <= 0:
         concurrency += NUM_CPUS
     return max(concurrency, 1)
 
@@ -139,20 +137,24 @@ def iter_frames(light_description):
     return range(start, end + 1)
 
 
-def get_image_path(light_name, renderer: str, frame: int, ext: str, prefix=""):
+def get_image_path(light_name, renderer: str, frame: int, ext: str, prefix="", renders_root=""):
+    if not renders_root:
+        renders_root = luxtest_utils.get_renders_root()
     ext = ext.lstrip(".")
     filename = f"{prefix}{light_name}-{renderer}.{frame:04}.{ext}"
     if ext == "png":
         base_dir = WEB_IMG_ROOT
     elif ext == "exr":
-        base_dir = os.path.join(RENDERS_ROOT, renderer)
+        base_dir = os.path.join(renders_root, renderer)
     else:
         raise ValueError(f"unrecognized extension: {ext}")
     return os.path.join(base_dir, filename)
 
 
-def get_image_url(light_name, renderer: str, frame: int, ext: str, prefix=""):
-    image_path = get_image_path(light_name, renderer, frame, ext, prefix=prefix)
+def get_image_url(light_name, renderer: str, frame: int, ext: str, prefix="", renders_root=""):
+    if not renders_root:
+        renders_root = luxtest_utils.get_renders_root()
+    image_path = get_image_path(light_name, renderer, frame, ext, prefix=prefix, renders_root=renders_root)
     rel_path = os.path.relpath(image_path, WEB_ROOT)
     return rel_path.replace(os.sep, "/")
 
@@ -246,7 +248,7 @@ async def update_diff(exr_path1, exr_path2, diff_path, verbose=False):
         raise_proc_error(proc, verbose)
 
 
-async def gen_images_async(light_descriptions, verbose=False, max_concurrency=-1):
+async def gen_images_async(light_descriptions, verbose=False, max_concurrency=-1, renders_root=""):
     flat_frames = []
     for name, description in light_descriptions.items():
         for frame in iter_frames(description):
@@ -271,16 +273,16 @@ async def gen_images_async(light_descriptions, verbose=False, max_concurrency=-1
     progress = tqdm.tqdm(flat_frames)
     for name, description, frame in progress:
         progress.set_postfix({"name": name, "frame": frame})
-        embree_exr_path = get_image_path(name, "embree", frame, "exr")
-        embree_png_path = get_image_path(name, "embree", frame, "png")
+        embree_exr_path = get_image_path(name, "embree", frame, "exr", renders_root=renders_root)
+        embree_png_path = get_image_path(name, "embree", frame, "png", renders_root=renders_root)
         queue_png_update(embree_exr_path, embree_png_path)
 
         for renderer in RENDERERS:
-            renderer_exr_path = get_image_path(name, renderer, frame, "exr")
-            renderer_png_path = get_image_path(name, renderer, frame, "png")
+            renderer_exr_path = get_image_path(name, renderer, frame, "exr", renders_root=renders_root)
+            renderer_png_path = get_image_path(name, renderer, frame, "png", renders_root=renders_root)
             queue_png_update(renderer_exr_path, renderer_png_path)
 
-            diff_png_path = get_image_path(name, renderer, frame, "png", prefix="diff-")
+            diff_png_path = get_image_path(name, renderer, frame, "png", prefix="diff-", renders_root=renders_root)
             queue_diff_update(embree_exr_path, renderer_exr_path, diff_png_path)
 
     print(f"Generating {len(all_tasks)} images (out of possible {num_possible_images}):")
@@ -298,11 +300,13 @@ async def gen_images_async(light_descriptions, verbose=False, max_concurrency=-1
     await tqdm.asyncio.tqdm_asyncio.gather(*limited_tasks)
 
 
-def gen_images(light_descriptions, verbose=False, max_concurrency=-1):
-    asyncio.run(gen_images_async(light_descriptions, verbose, max_concurrency=max_concurrency))
+def gen_images(light_descriptions, verbose=False, max_concurrency=-1, renders_root=""):
+    asyncio.run(
+        gen_images_async(light_descriptions, verbose, max_concurrency=max_concurrency, renders_root=renders_root)
+    )
 
 
-def gen_html(light_descriptions: Dict[str, genLightParamDescriptions.LightParamDescription]):
+def gen_html(light_descriptions: Dict[str, genLightParamDescriptions.LightParamDescription], renders_root=""):
     html = HTML_START
     num_cols = len(RENDERERS) * 2 + 1
 
@@ -354,13 +358,13 @@ def gen_html(light_descriptions: Dict[str, genLightParamDescriptions.LightParamD
             html += "  <tr>\n"
             html += f"    <td>{frame:04}</td>"
 
-            embree_url = get_image_url(name, "embree", frame, "png")
+            embree_url = get_image_url(name, "embree", frame, "png", renders_root=renders_root)
 
             html += f'    <td><img src="{embree_url}"</td>\n'
 
             for renderer in RENDERERS:
-                renderer_url = get_image_url(name, renderer, frame, "png")
-                diff_url = get_image_url(name, renderer, frame, "png", prefix="diff-")
+                renderer_url = get_image_url(name, renderer, frame, "png", renders_root=renders_root)
+                diff_url = get_image_url(name, renderer, frame, "png", prefix="diff-", renders_root=renders_root)
 
                 html += f'    <td><img src="{renderer_url}"</td>\n'
                 html += f'    <td><img src="{diff_url}"</td>\n'
@@ -384,9 +388,10 @@ def gen_diffs(verbose=False, max_concurrency=-1, lights: Iterable[str] = ()):
     if lights:
         light_descriptions = {light: desc for light, desc in light_descriptions.items() if light in lights}
 
+    renders_root = luxtest_utils.get_renders_root()
     os.makedirs(WEB_IMG_ROOT, exist_ok=True)
-    gen_images(light_descriptions, verbose=verbose, max_concurrency=max_concurrency)
-    gen_html(light_descriptions)
+    gen_images(light_descriptions, verbose=verbose, max_concurrency=max_concurrency, renders_root=renders_root)
+    gen_html(light_descriptions, renders_root=renders_root)
     elapsed = datetime.datetime.now() - start
     print(f"Done generating diffs - took: {elapsed}")
 
@@ -416,8 +421,8 @@ def get_parser():
         type=int,
         default="-1",
         help=(
-            "Number of oiiotool procs to run in parallel; negative values are subtracted from"
-            " multiprocessing.cpu_count()"
+            "Number of oiiotool procs to run in parallel; 0 means use multiprocessing.cpu_count(); negative values are"
+            " subtracted from multiprocessing.cpu_count()"
         ),
     )
     parser.add_argument(

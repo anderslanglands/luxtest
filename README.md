@@ -76,7 +76,7 @@ this repo, first ensure "renders" subdir does not already exist, then from
 the repo root, run:
 
 ```shell
-git clone https://github.com/pmolodo/luxtest_renders renders
+git clone --filter=blob:none https://github.com/pmolodo/luxtest_renders renders
 ```
 
 

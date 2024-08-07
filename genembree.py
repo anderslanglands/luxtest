@@ -39,7 +39,7 @@ EMBREE_DELEGATE = "Embree"
 DEFAULT_DELEGATES = (EMBREE_DELEGATE,)
 DEFAULT_INCLUDE_GLOBS = (os.path.join(THIS_DIR, "usd", "*.usda"),)
 DEFAULT_EXCLUDE_GLOBS = ()
-DEFAULT_OUTPUT_DIR = os.path.join(THIS_DIR, "renders")
+DEFAULT_OUTPUT_DIR = luxtest_utils.get_renders_root()
 DEFAULT_RESOLUTION = 512
 DEFAULT_CAMERAS = ("/cameras/camera1",)
 DEFAULT_CAMERAS_BY_USD = {
@@ -362,7 +362,7 @@ def run_test(
         frame_callback()
 
     if current_line:
-        process_text("".join(current_line))
+        process_text(b"".join(current_line))
     return proc.returncode
 
 

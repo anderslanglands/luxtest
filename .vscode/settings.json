@@ -2,6 +2,9 @@
     "[bat]": {
         "files.eol": "\r\n"
     },
+    "[ies]": {
+        "files.eol": "\r\n"
+    },
     "[python]": {
         "editor.codeActionsOnSave": {
             "source.organizeImports": "explicit"

@@ -14,23 +14,30 @@ import traceback
 
 from typing import Any, Dict, Iterable, List, NamedTuple, Optional, Tuple, TypeAlias, Union
 
-from pxr import Gf, Sdf, Usd, UsdLux
-
-IntFloat: TypeAlias = Union[int, float]
-
 THIS_FILE = os.path.abspath(inspect.getsourcefile(lambda: None) or __file__)
 THIS_DIR = os.path.dirname(THIS_FILE)
-USD_DIR = os.path.join(THIS_DIR, "usd")
-
 
 if THIS_DIR not in sys.path:
     sys.path.append(THIS_DIR)
 
+try:
+    from pxr import Sdf, Usd, UsdLux
+except ImportError:
+    import pip_import
+
+    pip_import.pip_import("pxr", "usd-core")
+    from pxr import Sdf, Usd, UsdLux
+
 import luxtest_const
+
+IntFloat: TypeAlias = Union[int, float]
+
 
 ###############################################################################
 # Constants
 ###############################################################################
+
+USD_DIR = os.path.join(THIS_DIR, "usd")
 
 LIGHT_NAME_SUFFIX = "_light"
 OUTPUT_JSON_PATH = os.path.join(THIS_DIR, "light_descriptions.json")
@@ -40,7 +47,8 @@ MISSING = object()
 
 AREA_LIGHT_SUMMARY_OVERRIDES = {
     (1, 5): "light rotate worldZ from 0 to 60",
-    (41, 45): "focusTint from black to green to white",
+    (26, 30): "light rotate under shear + nonuniform scale",
+    (46, 50): "focusTint from black to green to white",
 }
 
 SUMMARY_OVERRIDES = {
@@ -52,8 +60,8 @@ SUMMARY_OVERRIDES = {
         (1, 1): "ies:angleScale=0 ref",
         (11, 11): "ies:angleScale=0 ref",
         (21, 21): "ies:angleScale=0 ref",
-        (31, 21): "ies:angleScale=0 ref",
-        (41, 31): "no ies:file ref",
+        (31, 31): "ies:angleScale=0 ref",
+        (41, 41): "no ies:file ref",
     },
 }
 
@@ -100,14 +108,32 @@ def is_sorted(vals: Iterable):
     return True
 
 
+def _standardize_val_for_comparison(val):
+    if type(val).__name__.startswith("Matrix"):
+        flat = []
+        for vec in val:
+            flat.extend(list(vec))
+        return flat
+    elif type(val).__name__.startswith("Vec"):
+        return list(val)
+    if isinstance(val, (str, bytes)):
+        return val
+    try:
+        iter(val)
+    except Exception:
+        return val
+    # standardize all iterables as lists
+    return list(val)
+
+
 def vals_close(val1, val2):
+    val1 = _standardize_val_for_comparison(val1)
+    val2 = _standardize_val_for_comparison(val2)
     if isinstance(val1, float) or isinstance(val2, float):
         return math.isclose(val1, val2)
     elif type(val1) != type(val2):
         return False
-    elif type(val1).__name__.startswith("Matrix") or type(val1).__name__.startswith("Vec"):
-        return Gf.IsClose(val1, val2)
-    elif isinstance(val1, (list, tuple)):
+    elif isinstance(val1, list):
         if len(val1) != len(val2):
             return False
         return all(vals_close(v1, v2) for v1, v2 in zip(val1, val2))

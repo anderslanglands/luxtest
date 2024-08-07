@@ -1,11 +1,13 @@
 IESNA:LM-63-1995
-[DESCRIPTION] ies test file - horizontal black/white stripes every 10 degrees.
-[DESCRIPTION2] Bottom band/cap (vertical angle = 0 to 9) is .25, and top band/
-[DESCRIPTION3] cap (vertical angle = 170 to 180) is .75.
-[DESCRIPTION4] Uses uniform vertical samples angle interval, every 1.0 degrees.
-[DESCRIPTION4] Should behave identically to test_stripes_nonuniform.ies
-
-
+[TEST] N/A
+[TESTLAB] N/A
+[ISSUEDATE] N/A
+[MANUFAC] Synthetic data for testing import of .ies files
+[LAMP] ies test file - horizontal black/white stripes every 10 degrees.
+[MORE] Spacing of vertical angles is uniform (every 1 degree)
+[MORE] Bottom band/cap (vertical angle = 0 to 10) is .25
+[MORE] Top band/cap (vertical angle = 170 to 180) is .75
+[MORE] Should behave identically to test_stripes_nonuniform.ies
 TILT=NONE
 1 -1 1.0 181 1 1 2 1.000 1.000 1.000
 1.0 1.0 100

@@ -1,0 +1,37 @@
+name: deploy-webpage
+run-name: "Manual run: deploy-webpage #${{ github.run_number }} - by @${{ github.actor }} - ${{ github.ref_name }}@${{ github.workflow_sha }}"
+
+on: workflow_dispatch
+
+jobs:
+    build:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@master
+            - uses: actions/setup-node@master
+            - uses: actions/setup-python@master
+              with:
+                python-version: '>= 3.10'
+                architecture: 'x64'
+            - name: Install oiiotool
+              run: |
+                sudo apt-get update
+                sudo apt-get -y install openimageio-tools
+            - run: python ./gendiffs.py
+            - uses: actions/upload-pages-artifact@master
+              with:
+                path: web
+                if-no-files-found: error
+    deploy:
+        needs: build
+        permissions:
+            pages: write
+            id-token: write
+        environment:
+            name: github-pages
+            url: ${{ steps.deployment.outputs.page_url }}
+        runs-on: ubuntu-latest
+        steps:
+            - name: Deploy to Github Pages
+              id: deployment
+              uses: actions/deploy-pages@master

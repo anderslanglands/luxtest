@@ -1,9 +1,15 @@
-/.deps
-/.thumbs
-/backup
-/web
-/web.archive
-/renders
+# Rooted directories
+/.deps/
+/.thumbs/
+/backup/
+/web/
+/web.archive/
+/renders/
+
+# Rooted files
+/.env
+
+# Unrooted files
 **/*.rat
 **/*.tx
 **/*.autosave

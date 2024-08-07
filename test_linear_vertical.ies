@@ -1,5 +1,10 @@
 IESNA:LM-63-1995
-[DESCRIPTION] ies file for testing - linear map from vertical angle, 0=>1 and 180=>0
+[TEST] N/A
+[TESTLAB] N/A
+[ISSUEDATE] N/A
+[MANUFAC] Synthetic data for testing import of .ies files
+[LAMP] ies test file - linear map from vertical angle, 0=>1 and 180=>0
+[DESCRIPTION] ies file for testing -
 TILT=NONE
 1 -1 1.0 2 1 1 2 1.000 1.000 1.000
 1.0 1.0 100

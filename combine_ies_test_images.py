@@ -10,15 +10,13 @@ import subprocess
 import sys
 import traceback
 
-
-def does_something(arg1, opt_arg="blah"):
-    print(arg1, opt_arg)
-
-
 THIS_FILE = os.path.abspath(inspect.getsourcefile(lambda: None) or __file__)
 THIS_DIR = os.path.dirname(THIS_FILE)
 
-RENDERS_DIR = os.path.join(THIS_DIR, "renders")
+if THIS_DIR not in sys.path:
+    sys.path.append(THIS_DIR)
+
+import luxtest_utils
 
 RENDERERS = ("embree", "arnold", "karma", "ris")
 
@@ -55,8 +53,9 @@ def combine_ies_test_images(renderers=(), delete=True):
     to_delete = []
     if not renderers:
         renderers = RENDERERS
+    renders_root = luxtest_utils.get_renders_root()
     for renderer in renderers:
-        renderer_dir = os.path.join(RENDERS_DIR, renderer)
+        renderer_dir = os.path.join(renders_root, renderer)
 
         top_frames = {}
         bottom_frames = {}

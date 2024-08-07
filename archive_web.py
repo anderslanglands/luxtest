@@ -18,13 +18,16 @@ import traceback
 THIS_FILE = os.path.abspath(inspect.getsourcefile(lambda: None) or __file__)
 THIS_DIR = os.path.dirname(THIS_FILE)
 
+if THIS_DIR not in sys.path:
+    sys.path.append(THIS_DIR)
+
+import luxtest_utils
+
 WEB_DIR = os.path.join(THIS_DIR, "web")
 WEB_ARCHIVE_DIR = os.path.join(THIS_DIR, "web.archive")
 
 DEFAULT_USD_REPO = os.path.join(os.path.dirname(THIS_DIR), "usd-ci", "USD")
 USD_REPO = os.environ.get("USD_ROOT", DEFAULT_USD_REPO)
-
-RENDERS_REPO = os.path.join(THIS_DIR, "renders")
 
 ###############################################################################
 # Utilities
@@ -41,10 +44,10 @@ def is_ipython():
 
 def get_git_hash(repo_dir, n=8):
     proc = subprocess.run(["git", "rev-parse", "HEAD"], cwd=repo_dir, text=True, capture_output=True)
-    hash = proc.stdout.strip()
+    githash = proc.stdout.strip()
     if n:
-        hash = hash[:n]
-    return hash
+        githash = githash[:n]
+    return githash
 
 
 ###############################################################################
@@ -56,7 +59,7 @@ def archive_web(name: str):
     now = datetime.datetime.now()
     date = now.strftime("%Y-%m-%d")
     luxtest_hash = get_git_hash(THIS_DIR)
-    renders_hash = get_git_hash(RENDERS_REPO)
+    renders_hash = get_git_hash(luxtest_utils.get_renders_root())
     usd_hash = get_git_hash(USD_REPO)
     dest_name = f"{date}.{name}.luxtest-{luxtest_hash}.usd-{usd_hash}.renders-{renders_hash}"
     dest_path = os.path.join(WEB_ARCHIVE_DIR, dest_name)
