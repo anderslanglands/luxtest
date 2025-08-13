@@ -22,12 +22,7 @@
                     5
                 ],
                 "non_default_constants": {
-                    "inputs:intensity": 5.0,
-                    "inputs:shaping:focusTint": [
-                        0.0,
-                        0.0,
-                        0.0
-                    ]
+                    "inputs:intensity": 5.0
                 },
                 "varying": {}
             },
@@ -37,12 +32,7 @@
                     10
                 ],
                 "non_default_constants": {
-                    "inputs:intensity": 5.0,
-                    "inputs:shaping:focusTint": [
-                        0.0,
-                        0.0,
-                        0.0
-                    ]
+                    "inputs:intensity": 5.0
                 },
                 "varying": {
                     "inputs:radius": {
@@ -61,12 +51,7 @@
                 ],
                 "non_default_constants": {
                     "inputs:intensity": 5.0,
-                    "inputs:normalize": true,
-                    "inputs:shaping:focusTint": [
-                        0.0,
-                        0.0,
-                        0.0
-                    ]
+                    "inputs:normalize": true
                 },
                 "varying": {
                     "inputs:radius": {
@@ -85,12 +70,7 @@
                 ],
                 "non_default_constants": {
                     "inputs:enableColorTemperature": true,
-                    "inputs:intensity": 5.0,
-                    "inputs:shaping:focusTint": [
-                        0.0,
-                        0.0,
-                        0.0
-                    ]
+                    "inputs:intensity": 5.0
                 },
                 "varying": {
                     "inputs:colorTemperature": {
@@ -109,12 +89,7 @@
                 ],
                 "non_default_constants": {
                     "inputs:intensity": 125.0,
-                    "inputs:radius": 0.10000000149011612,
-                    "inputs:shaping:focusTint": [
-                        0.0,
-                        0.0,
-                        0.0
-                    ]
+                    "inputs:radius": 0.10000000149011612
                 },
                 "varying": {
                     "inputs:shaping:cone:angle": {
@@ -133,12 +108,7 @@
                 ],
                 "non_default_constants": {
                     "inputs:intensity": 5.0,
-                    "inputs:shaping:cone:angle": 45.0,
-                    "inputs:shaping:focusTint": [
-                        0.0,
-                        0.0,
-                        0.0
-                    ]
+                    "inputs:shaping:cone:angle": 45.0
                 },
                 "varying": {
                     "inputs:shaping:cone:softness": {
@@ -156,12 +126,7 @@
                     35
                 ],
                 "non_default_constants": {
-                    "inputs:intensity": 5.0,
-                    "inputs:shaping:focusTint": [
-                        0.0,
-                        0.0,
-                        0.0
-                    ]
+                    "inputs:intensity": 5.0
                 },
                 "varying": {
                     "inputs:shaping:focus": {
@@ -239,58 +204,56 @@
             {
                 "frames": [
                     46,
-                    50
+                    54
                 ],
                 "non_default_constants": {
                     "inputs:exposure": -11.0,
                     "inputs:intensity": 5.0,
-                    "inputs:shaping:focusTint": [
-                        0.0,
-                        0.0,
-                        0.0
-                    ],
-                    "inputs:shaping:ies:file": "../bega_omni002_4777lm.ies"
+                    "inputs:shaping:ies:file": "../ies/bega_omni002_4777lm.ies"
                 },
                 "varying": {
                     "inputs:shaping:ies:angleScale": {
-                        "46": -1.0,
-                        "47": -0.5,
-                        "48": 0.0,
-                        "49": 0.5,
-                        "50": 1.0
+                        "46": -2.0,
+                        "47": -1.5,
+                        "48": -1.0,
+                        "49": -0.5,
+                        "50": 0.0,
+                        "51": 0.5,
+                        "52": 1.0,
+                        "53": 1.5,
+                        "54": 2.0
                     }
                 }
             },
             {
                 "frames": [
-                    51,
-                    55
+                    55,
+                    63
                 ],
                 "non_default_constants": {
-                    "inputs:shaping:focusTint": [
-                        0.0,
-                        0.0,
-                        0.0
-                    ],
-                    "inputs:shaping:ies:file": "../bega_omni002_4777lm.ies",
+                    "inputs:shaping:ies:file": "../ies/bega_omni002_4777lm.ies",
                     "inputs:shaping:ies:normalize": true
                 },
                 "varying": {
                     "inputs:shaping:ies:angleScale": {
-                        "51": -1.0,
-                        "52": -0.5,
-                        "53": 0.0,
-                        "54": 0.5,
-                        "55": 1.0
+                        "55": -2.0,
+                        "56": -1.5,
+                        "57": -1.0,
+                        "58": -0.5,
+                        "59": 0.0,
+                        "60": 0.5,
+                        "61": 1.0,
+                        "62": 1.5,
+                        "63": 2.0
                     }
                 }
             }
         ],
         "frames": [
             1,
-            55
+            63
         ],
-        "usd_path": "C:\\src\\NVIDIA\\luxtest\\usd\\cylinder.usda"
+        "usd_path": "usd/cylinder.usda"
     },
     "disk": {
         "attrs": [
@@ -315,12 +278,7 @@
                     5
                 ],
                 "non_default_constants": {
-                    "inputs:intensity": 5.0,
-                    "inputs:shaping:focusTint": [
-                        0.0,
-                        0.0,
-                        0.0
-                    ]
+                    "inputs:intensity": 5.0
                 },
                 "varying": {}
             },
@@ -330,12 +288,7 @@
                     10
                 ],
                 "non_default_constants": {
-                    "inputs:intensity": 5.0,
-                    "inputs:shaping:focusTint": [
-                        0.0,
-                        0.0,
-                        0.0
-                    ]
+                    "inputs:intensity": 5.0
                 },
                 "varying": {
                     "inputs:radius": {
@@ -354,12 +307,7 @@
                 ],
                 "non_default_constants": {
                     "inputs:intensity": 5.0,
-                    "inputs:normalize": true,
-                    "inputs:shaping:focusTint": [
-                        0.0,
-                        0.0,
-                        0.0
-                    ]
+                    "inputs:normalize": true
                 },
                 "varying": {
                     "inputs:radius": {
@@ -378,12 +326,7 @@
                 ],
                 "non_default_constants": {
                     "inputs:enableColorTemperature": true,
-                    "inputs:intensity": 5.0,
-                    "inputs:shaping:focusTint": [
-                        0.0,
-                        0.0,
-                        0.0
-                    ]
+                    "inputs:intensity": 5.0
                 },
                 "varying": {
                     "inputs:colorTemperature": {
@@ -402,12 +345,7 @@
                 ],
                 "non_default_constants": {
                     "inputs:intensity": 125.0,
-                    "inputs:radius": 0.10000000149011612,
-                    "inputs:shaping:focusTint": [
-                        0.0,
-                        0.0,
-                        0.0
-                    ]
+                    "inputs:radius": 0.10000000149011612
                 },
                 "varying": {
                     "inputs:shaping:cone:angle": {
@@ -426,12 +364,7 @@
                 ],
                 "non_default_constants": {
                     "inputs:intensity": 5.0,
-                    "inputs:shaping:cone:angle": 45.0,
-                    "inputs:shaping:focusTint": [
-                        0.0,
-                        0.0,
-                        0.0
-                    ]
+                    "inputs:shaping:cone:angle": 45.0
                 },
                 "varying": {
                     "inputs:shaping:cone:softness": {
@@ -449,12 +382,7 @@
                     35
                 ],
                 "non_default_constants": {
-                    "inputs:intensity": 5.0,
-                    "inputs:shaping:focusTint": [
-                        0.0,
-                        0.0,
-                        0.0
-                    ]
+                    "inputs:intensity": 5.0
                 },
                 "varying": {
                     "inputs:shaping:focus": {
@@ -532,58 +460,56 @@
             {
                 "frames": [
                     46,
-                    50
+                    54
                 ],
                 "non_default_constants": {
                     "inputs:exposure": -11.0,
                     "inputs:intensity": 5.0,
-                    "inputs:shaping:focusTint": [
-                        0.0,
-                        0.0,
-                        0.0
-                    ],
-                    "inputs:shaping:ies:file": "../bega_omni002_4777lm.ies"
+                    "inputs:shaping:ies:file": "../ies/bega_omni002_4777lm.ies"
                 },
                 "varying": {
                     "inputs:shaping:ies:angleScale": {
-                        "46": -1.0,
-                        "47": -0.5,
-                        "48": 0.0,
-                        "49": 0.5,
-                        "50": 1.0
+                        "46": -2.0,
+                        "47": -1.5,
+                        "48": -1.0,
+                        "49": -0.5,
+                        "50": 0.0,
+                        "51": 0.5,
+                        "52": 1.0,
+                        "53": 1.5,
+                        "54": 2.0
                     }
                 }
             },
             {
                 "frames": [
-                    51,
-                    55
+                    55,
+                    63
                 ],
                 "non_default_constants": {
-                    "inputs:shaping:focusTint": [
-                        0.0,
-                        0.0,
-                        0.0
-                    ],
-                    "inputs:shaping:ies:file": "../bega_omni002_4777lm.ies",
+                    "inputs:shaping:ies:file": "../ies/bega_omni002_4777lm.ies",
                     "inputs:shaping:ies:normalize": true
                 },
                 "varying": {
                     "inputs:shaping:ies:angleScale": {
-                        "51": -1.0,
-                        "52": -0.5,
-                        "53": 0.0,
-                        "54": 0.5,
-                        "55": 1.0
+                        "55": -2.0,
+                        "56": -1.5,
+                        "57": -1.0,
+                        "58": -0.5,
+                        "59": 0.0,
+                        "60": 0.5,
+                        "61": 1.0,
+                        "62": 1.5,
+                        "63": 2.0
                     }
                 }
             }
         ],
         "frames": [
             1,
-            55
+            63
         ],
-        "usd_path": "C:\\src\\NVIDIA\\luxtest\\usd\\disk.usda"
+        "usd_path": "usd/disk.usda"
     },
     "distant": {
         "attrs": [
@@ -819,7 +745,7 @@
             1,
             35
         ],
-        "usd_path": "C:\\src\\NVIDIA\\luxtest\\usd\\distant.usda"
+        "usd_path": "usd/distant.usda"
     },
     "dome": {
         "attrs": [],
@@ -828,7 +754,316 @@
             1,
             1
         ],
-        "usd_path": "C:\\src\\NVIDIA\\luxtest\\usd\\dome.usda"
+        "usd_path": "usd/dome.usda"
+    },
+    "iesDown": {
+        "attrs": [
+            "inputs:shaping:ies:angleScale"
+        ],
+        "frame_groups": [
+            {
+                "frames": [
+                    1,
+                    49
+                ],
+                "non_default_constants": {},
+                "varying": {
+                    "inputs:shaping:ies:angleScale": {
+                        "1": 0.1666666716337204,
+                        "2": 0.1597222238779068,
+                        "3": 0.1527777761220932,
+                        "4": 0.1458333283662796,
+                        "5": 0.1388888955116272,
+                        "6": 0.1319444477558136,
+                        "7": 0.125,
+                        "8": 0.1180555522441864,
+                        "9": 0.1111111119389534,
+                        "10": 0.1041666641831398,
+                        "11": 0.0972222238779068,
+                        "12": 0.0902777761220932,
+                        "13": 0.0833333358168602,
+                        "14": 0.0763888880610466,
+                        "15": 0.0694444477558136,
+                        "16": 0.0625,
+                        "17": 0.0555555559694767,
+                        "18": 0.0486111119389534,
+                        "19": 0.0416666679084301,
+                        "20": 0.0347222238779068,
+                        "21": 0.02777777798473835,
+                        "22": 0.02083333395421505,
+                        "23": 0.013888888992369175,
+                        "24": 0.0069444444961845875,
+                        "25": 0.0,
+                        "26": -0.0069444444961845875,
+                        "27": -0.013888888992369175,
+                        "28": -0.02083333395421505,
+                        "29": -0.02777777798473835,
+                        "30": -0.0347222238779068,
+                        "31": -0.0416666679084301,
+                        "32": -0.0486111119389534,
+                        "33": -0.0555555559694767,
+                        "34": -0.0625,
+                        "35": -0.0694444477558136,
+                        "36": -0.0763888880610466,
+                        "37": -0.0833333358168602,
+                        "38": -0.0902777761220932,
+                        "39": -0.0972222238779068,
+                        "40": -0.1041666641831398,
+                        "41": -0.1111111119389534,
+                        "42": -0.1180555522441864,
+                        "43": -0.125,
+                        "44": -0.1319444477558136,
+                        "45": -0.1388888955116272,
+                        "46": -0.1458333283662796,
+                        "47": -0.1527777761220932,
+                        "48": -0.1597222238779068,
+                        "49": -0.1666666716337204
+                    }
+                }
+            },
+            {
+                "frames": [
+                    50,
+                    98
+                ],
+                "non_default_constants": {},
+                "varying": {
+                    "inputs:shaping:ies:angleScale": {
+                        "50": 0.5,
+                        "51": 0.4791666567325592,
+                        "52": 0.4583333432674408,
+                        "53": 0.4375,
+                        "54": 0.4166666567325592,
+                        "55": 0.3958333432674408,
+                        "56": 0.375,
+                        "57": 0.3541666567325592,
+                        "58": 0.3333333432674408,
+                        "59": 0.3125,
+                        "60": 0.2916666567325592,
+                        "61": 0.2708333432674408,
+                        "62": 0.25,
+                        "63": 0.2291666716337204,
+                        "64": 0.2083333283662796,
+                        "65": 0.1875,
+                        "66": 0.1666666716337204,
+                        "67": 0.1458333283662796,
+                        "68": 0.125,
+                        "69": 0.1041666641831398,
+                        "70": 0.0833333358168602,
+                        "71": 0.0625,
+                        "72": 0.0416666679084301,
+                        "73": 0.02083333395421505,
+                        "74": 0.0,
+                        "75": -0.013888888992369175,
+                        "76": -0.02777777798473835,
+                        "77": -0.0416666679084301,
+                        "78": -0.0555555559694767,
+                        "79": -0.0694444477558136,
+                        "80": -0.0833333358168602,
+                        "81": -0.0972222238779068,
+                        "82": -0.1111111119389534,
+                        "83": -0.125,
+                        "84": -0.1388888955116272,
+                        "85": -0.1527777761220932,
+                        "86": -0.1666666716337204,
+                        "87": -0.1805555522441864,
+                        "88": -0.1944444477558136,
+                        "89": -0.2083333283662796,
+                        "90": -0.2222222238779068,
+                        "91": -0.2361111044883728,
+                        "92": -0.25,
+                        "93": -0.2638888955116272,
+                        "94": -0.2777777910232544,
+                        "95": -0.2916666567325592,
+                        "96": -0.3055555522441864,
+                        "97": -0.3194444477558136,
+                        "98": -0.3333333432674408
+                    }
+                }
+            },
+            {
+                "frames": [
+                    99,
+                    147
+                ],
+                "non_default_constants": {},
+                "varying": {
+                    "inputs:shaping:ies:angleScale": {
+                        "99": 0.5,
+                        "100": 0.5208333134651184,
+                        "101": 0.5416666865348816,
+                        "102": 0.5625,
+                        "103": 0.5833333134651184,
+                        "104": 0.6041666865348816,
+                        "105": 0.625,
+                        "106": 0.6458333134651184,
+                        "107": 0.6666666865348816,
+                        "108": 0.6875,
+                        "109": 0.7083333134651184,
+                        "110": 0.7291666865348816,
+                        "111": 0.75,
+                        "112": 0.7708333134651184,
+                        "113": 0.7916666865348816,
+                        "114": 0.8125,
+                        "115": 0.8333333134651184,
+                        "116": 0.8541666865348816,
+                        "117": 0.875,
+                        "118": 0.8958333134651184,
+                        "119": 0.9166666865348816,
+                        "120": 0.9375,
+                        "121": 0.9583333134651184,
+                        "122": 0.9791666865348816,
+                        "123": 1.0,
+                        "124": 1.0208333730697632,
+                        "125": 1.0416666269302368,
+                        "126": 1.0625,
+                        "127": 1.0833333730697632,
+                        "128": 1.1041666269302368,
+                        "129": 1.125,
+                        "130": 1.1458333730697632,
+                        "131": 1.1666666269302368,
+                        "132": 1.1875,
+                        "133": 1.2083333730697632,
+                        "134": 1.2291666269302368,
+                        "135": 1.25,
+                        "136": 1.2708333730697632,
+                        "137": 1.2916666269302368,
+                        "138": 1.3125,
+                        "139": 1.3333333730697632,
+                        "140": 1.3541666269302368,
+                        "141": 1.375,
+                        "142": 1.3958333730697632,
+                        "143": 1.4166666269302368,
+                        "144": 1.4375,
+                        "145": 1.4583333730697632,
+                        "146": 1.4791666269302368,
+                        "147": 1.5
+                    }
+                }
+            }
+        ],
+        "frames": [
+            1,
+            147
+        ],
+        "usd_path": "usd/iesDown.usda"
+    },
+    "iesLibPreview": {
+        "attrs": [
+            "inputs:intensity",
+            "inputs:shaping:ies:angleScale",
+            "inputs:shaping:ies:file",
+            "inputs:shaping:ies:normalize"
+        ],
+        "frame_groups": [
+            {
+                "frames": [
+                    1,
+                    1
+                ],
+                "non_default_constants": {
+                    "inputs:shaping:ies:file": "../ies/04f377f94ce81cd7b5101fffdf571454.ies"
+                },
+                "varying": {}
+            },
+            {
+                "frames": [
+                    2,
+                    10
+                ],
+                "non_default_constants": {
+                    "inputs:shaping:ies:file": "../ies/04f377f94ce81cd7b5101fffdf571454.ies"
+                },
+                "varying": {
+                    "inputs:shaping:ies:angleScale": {
+                        "2": -2.0,
+                        "3": -1.5,
+                        "4": -1.0,
+                        "5": -0.5,
+                        "6": 0.0,
+                        "7": 0.5,
+                        "8": 1.0,
+                        "9": 1.5,
+                        "10": 2.0
+                    }
+                }
+            },
+            {
+                "frames": [
+                    11,
+                    11
+                ],
+                "non_default_constants": {
+                    "inputs:intensity": 1000.0,
+                    "inputs:shaping:ies:file": "../ies/test_vstripes_hquadrants_nonuniform.ies"
+                },
+                "varying": {}
+            },
+            {
+                "frames": [
+                    12,
+                    20
+                ],
+                "non_default_constants": {
+                    "inputs:intensity": 1000.0,
+                    "inputs:shaping:ies:file": "../ies/test_vstripes_hquadrants_nonuniform.ies"
+                },
+                "varying": {
+                    "inputs:shaping:ies:angleScale": {
+                        "12": -2.0,
+                        "13": -1.5,
+                        "14": -1.0,
+                        "15": -0.5,
+                        "16": 0.0,
+                        "17": 0.5,
+                        "18": 1.0,
+                        "19": 1.5,
+                        "20": 2.0
+                    }
+                }
+            },
+            {
+                "frames": [
+                    21,
+                    21
+                ],
+                "non_default_constants": {
+                    "inputs:intensity": 1000.0,
+                    "inputs:shaping:ies:file": "../ies/test_vstripes_hquadrants_nonuniform.ies",
+                    "inputs:shaping:ies:normalize": true
+                },
+                "varying": {}
+            },
+            {
+                "frames": [
+                    22,
+                    30
+                ],
+                "non_default_constants": {
+                    "inputs:intensity": 1000.0,
+                    "inputs:shaping:ies:file": "../ies/test_vstripes_hquadrants_nonuniform.ies",
+                    "inputs:shaping:ies:normalize": true
+                },
+                "varying": {
+                    "inputs:shaping:ies:angleScale": {
+                        "22": -2.0,
+                        "23": -1.5,
+                        "24": -1.0,
+                        "25": -0.5,
+                        "26": 0.0,
+                        "27": 0.5,
+                        "28": 1.0,
+                        "29": 1.5,
+                        "30": 2.0
+                    }
+                }
+            }
+        ],
+        "frames": [
+            1,
+            30
+        ],
+        "usd_path": "usd/iesLibPreview.usda"
     },
     "iesTest": {
         "attrs": [
@@ -844,8 +1079,7 @@
                     1
                 ],
                 "non_default_constants": {
-                    "inputs:intensity": 1000.0,
-                    "inputs:shaping:ies:file": "../test_stripes_nonuniform.ies"
+                    "inputs:shaping:ies:file": "../ies/04f377f94ce81cd7b5101fffdf571454.ies"
                 },
                 "varying": {}
             },
@@ -855,20 +1089,19 @@
                     10
                 ],
                 "non_default_constants": {
-                    "inputs:intensity": 1000.0,
-                    "inputs:shaping:ies:file": "../test_stripes_nonuniform.ies"
+                    "inputs:shaping:ies:file": "../ies/04f377f94ce81cd7b5101fffdf571454.ies"
                 },
                 "varying": {
                     "inputs:shaping:ies:angleScale": {
-                        "2": -1.0,
-                        "3": -0.75,
-                        "4": -0.5,
-                        "5": -0.25,
-                        "6": 4.440892098500626e-16,
-                        "7": 0.25,
-                        "8": 0.5,
-                        "9": 0.75,
-                        "10": 1.0
+                        "2": -2.0,
+                        "3": -1.5,
+                        "4": -1.0,
+                        "5": -0.5,
+                        "6": 0.0,
+                        "7": 0.5,
+                        "8": 1.0,
+                        "9": 1.5,
+                        "10": 2.0
                     }
                 }
             },
@@ -879,7 +1112,7 @@
                 ],
                 "non_default_constants": {
                     "inputs:intensity": 1000.0,
-                    "inputs:shaping:ies:file": "../test_stripes_uniform.ies"
+                    "inputs:shaping:ies:file": "../ies/test_vstripes_hquadrants_nonuniform.ies"
                 },
                 "varying": {}
             },
@@ -890,19 +1123,19 @@
                 ],
                 "non_default_constants": {
                     "inputs:intensity": 1000.0,
-                    "inputs:shaping:ies:file": "../test_stripes_uniform.ies"
+                    "inputs:shaping:ies:file": "../ies/test_vstripes_hquadrants_nonuniform.ies"
                 },
                 "varying": {
                     "inputs:shaping:ies:angleScale": {
-                        "12": -1.0,
-                        "13": -0.75,
-                        "14": -0.5,
-                        "15": -0.25,
+                        "12": -2.0,
+                        "13": -1.5,
+                        "14": -1.0,
+                        "15": -0.5,
                         "16": 0.0,
-                        "17": 0.25,
-                        "18": 0.5,
-                        "19": 0.75,
-                        "20": 1.0
+                        "17": 0.5,
+                        "18": 1.0,
+                        "19": 1.5,
+                        "20": 2.0
                     }
                 }
             },
@@ -913,7 +1146,7 @@
                 ],
                 "non_default_constants": {
                     "inputs:intensity": 1000.0,
-                    "inputs:shaping:ies:file": "../test_stripes_uniform.ies",
+                    "inputs:shaping:ies:file": "../ies/test_vstripes_hquadrants_nonuniform.ies",
                     "inputs:shaping:ies:normalize": true
                 },
                 "varying": {}
@@ -925,77 +1158,221 @@
                 ],
                 "non_default_constants": {
                     "inputs:intensity": 1000.0,
-                    "inputs:shaping:ies:file": "../test_stripes_uniform.ies",
+                    "inputs:shaping:ies:file": "../ies/test_vstripes_hquadrants_nonuniform.ies",
                     "inputs:shaping:ies:normalize": true
                 },
                 "varying": {
                     "inputs:shaping:ies:angleScale": {
-                        "22": -1.0,
-                        "23": -0.75,
-                        "24": -0.5,
-                        "25": -0.25,
+                        "22": -2.0,
+                        "23": -1.5,
+                        "24": -1.0,
+                        "25": -0.5,
                         "26": 0.0,
-                        "27": 0.25,
-                        "28": 0.5,
-                        "29": 0.75,
-                        "30": 1.0
+                        "27": 0.5,
+                        "28": 1.0,
+                        "29": 1.5,
+                        "30": 2.0
                     }
                 }
-            },
-            {
-                "frames": [
-                    31,
-                    32
-                ],
-                "non_default_constants": {
-                    "inputs:intensity": 1000000.0,
-                    "inputs:shaping:ies:file": "../test_stripes_uniform.ies"
-                },
-                "varying": {
-                    "inputs:shaping:ies:angleScale": {
-                        "31": 0.0,
-                        "32": -1.0
-                    }
-                }
-            },
-            {
-                "frames": [
-                    33,
-                    40
-                ],
-                "non_default_constants": {
-                    "inputs:intensity": 1000000.0,
-                    "inputs:shaping:ies:file": "../test_stripes_uniform.ies"
-                },
-                "varying": {
-                    "inputs:shaping:ies:angleScale": {
-                        "33": -0.75,
-                        "34": -0.5,
-                        "35": -0.25,
-                        "36": -6.661338147750939e-16,
-                        "37": 0.25,
-                        "38": 0.5,
-                        "39": 0.75,
-                        "40": 1.0
-                    }
-                }
-            },
-            {
-                "frames": [
-                    41,
-                    41
-                ],
-                "non_default_constants": {
-                    "inputs:intensity": 1000000.0
-                },
-                "varying": {}
             }
         ],
         "frames": [
             1,
-            41
+            30
         ],
-        "usd_path": "C:\\src\\NVIDIA\\luxtest\\usd\\iesTest.usda"
+        "usd_path": "usd/iesTest.usda"
+    },
+    "iesUp": {
+        "attrs": [
+            "inputs:shaping:ies:angleScale"
+        ],
+        "frame_groups": [
+            {
+                "frames": [
+                    1,
+                    49
+                ],
+                "non_default_constants": {},
+                "varying": {
+                    "inputs:shaping:ies:angleScale": {
+                        "1": -0.5,
+                        "2": -0.4791666567325592,
+                        "3": -0.4583333432674408,
+                        "4": -0.4375,
+                        "5": -0.4166666567325592,
+                        "6": -0.3958333432674408,
+                        "7": -0.375,
+                        "8": -0.3541666567325592,
+                        "9": -0.3333333432674408,
+                        "10": -0.3125,
+                        "11": -0.2916666567325592,
+                        "12": -0.2708333432674408,
+                        "13": -0.25,
+                        "14": -0.2291666716337204,
+                        "15": -0.2083333283662796,
+                        "16": -0.1875,
+                        "17": -0.1666666716337204,
+                        "18": -0.1458333283662796,
+                        "19": -0.125,
+                        "20": -0.1041666641831398,
+                        "21": -0.0833333358168602,
+                        "22": -0.0625,
+                        "23": -0.0416666679084301,
+                        "24": -0.02083333395421505,
+                        "25": 0.0,
+                        "26": 0.02083333395421505,
+                        "27": 0.0416666679084301,
+                        "28": 0.0625,
+                        "29": 0.0833333358168602,
+                        "30": 0.1041666641831398,
+                        "31": 0.125,
+                        "32": 0.1458333283662796,
+                        "33": 0.1666666716337204,
+                        "34": 0.1875,
+                        "35": 0.2083333283662796,
+                        "36": 0.2291666716337204,
+                        "37": 0.25,
+                        "38": 0.2708333432674408,
+                        "39": 0.2916666567325592,
+                        "40": 0.3125,
+                        "41": 0.3333333432674408,
+                        "42": 0.3541666567325592,
+                        "43": 0.375,
+                        "44": 0.3958333432674408,
+                        "45": 0.4166666567325592,
+                        "46": 0.4375,
+                        "47": 0.4583333432674408,
+                        "48": 0.4791666567325592,
+                        "49": 0.5
+                    }
+                }
+            },
+            {
+                "frames": [
+                    50,
+                    98
+                ],
+                "non_default_constants": {},
+                "varying": {
+                    "inputs:shaping:ies:angleScale": {
+                        "50": -0.1428571492433548,
+                        "51": -0.1369047611951828,
+                        "52": -0.130952388048172,
+                        "53": -0.125,
+                        "54": -0.1190476194024086,
+                        "55": -0.1130952388048172,
+                        "56": -0.1071428582072258,
+                        "57": -0.1011904776096344,
+                        "58": -0.095238097012043,
+                        "59": -0.0892857164144516,
+                        "60": -0.0833333358168602,
+                        "61": -0.0773809552192688,
+                        "62": -0.0714285746216774,
+                        "63": -0.065476194024086,
+                        "64": -0.0595238097012043,
+                        "65": -0.0535714291036129,
+                        "66": -0.0476190485060215,
+                        "67": -0.0416666679084301,
+                        "68": -0.0357142873108387,
+                        "69": -0.02976190485060215,
+                        "70": -0.02380952425301075,
+                        "71": -0.01785714365541935,
+                        "72": -0.011904762126505375,
+                        "73": -0.0059523810632526875,
+                        "74": 0.0,
+                        "75": 0.0069444444961845875,
+                        "76": 0.013888888992369175,
+                        "77": 0.02083333395421505,
+                        "78": 0.02777777798473835,
+                        "79": 0.0347222238779068,
+                        "80": 0.0416666679084301,
+                        "81": 0.0486111119389534,
+                        "82": 0.0555555559694767,
+                        "83": 0.0625,
+                        "84": 0.0694444477558136,
+                        "85": 0.0763888880610466,
+                        "86": 0.0833333358168602,
+                        "87": 0.0902777761220932,
+                        "88": 0.0972222238779068,
+                        "89": 0.1041666641831398,
+                        "90": 0.1111111119389534,
+                        "91": 0.1180555522441864,
+                        "92": 0.125,
+                        "93": 0.1319444477558136,
+                        "94": 0.1388888955116272,
+                        "95": 0.1458333283662796,
+                        "96": 0.1527777761220932,
+                        "97": 0.1597222238779068,
+                        "98": 0.1666666716337204
+                    }
+                }
+            },
+            {
+                "frames": [
+                    99,
+                    147
+                ],
+                "non_default_constants": {},
+                "varying": {
+                    "inputs:shaping:ies:angleScale": {
+                        "99": -0.5,
+                        "100": -0.5208333134651184,
+                        "101": -0.5416666865348816,
+                        "102": -0.5625,
+                        "103": -0.5833333134651184,
+                        "104": -0.6041666865348816,
+                        "105": -0.625,
+                        "106": -0.6458333134651184,
+                        "107": -0.6666666865348816,
+                        "108": -0.6875,
+                        "109": -0.7083333134651184,
+                        "110": -0.7291666865348816,
+                        "111": -0.75,
+                        "112": -0.7708333134651184,
+                        "113": -0.7916666865348816,
+                        "114": -0.8125,
+                        "115": -0.8333333134651184,
+                        "116": -0.8541666865348816,
+                        "117": -0.875,
+                        "118": -0.8958333134651184,
+                        "119": -0.9166666865348816,
+                        "120": -0.9375,
+                        "121": -0.9583333134651184,
+                        "122": -0.9791666865348816,
+                        "123": -1.0,
+                        "124": -1.0208333730697632,
+                        "125": -1.0416666269302368,
+                        "126": -1.0625,
+                        "127": -1.0833333730697632,
+                        "128": -1.1041666269302368,
+                        "129": -1.125,
+                        "130": -1.1458333730697632,
+                        "131": -1.1666666269302368,
+                        "132": -1.1875,
+                        "133": -1.2083333730697632,
+                        "134": -1.2291666269302368,
+                        "135": -1.25,
+                        "136": -1.2708333730697632,
+                        "137": -1.2916666269302368,
+                        "138": -1.3125,
+                        "139": -1.3333333730697632,
+                        "140": -1.3541666269302368,
+                        "141": -1.375,
+                        "142": -1.3958333730697632,
+                        "143": -1.4166666269302368,
+                        "144": -1.4375,
+                        "145": -1.4583333730697632,
+                        "146": -1.4791666269302368,
+                        "147": -1.5
+                    }
+                }
+            }
+        ],
+        "frames": [
+            1,
+            147
+        ],
+        "usd_path": "usd/iesUp.usda"
     },
     "ies_scale": {
         "attrs": [
@@ -1038,7 +1415,7 @@
             1,
             20
         ],
-        "usd_path": "C:\\src\\NVIDIA\\luxtest\\usd\\ies_scale.usda"
+        "usd_path": "usd/ies_scale.usda"
     },
     "rect": {
         "attrs": [
@@ -1063,12 +1440,7 @@
                     5
                 ],
                 "non_default_constants": {
-                    "inputs:intensity": 5.0,
-                    "inputs:shaping:focusTint": [
-                        0.0,
-                        0.0,
-                        0.0
-                    ]
+                    "inputs:intensity": 5.0
                 },
                 "varying": {}
             },
@@ -1078,12 +1450,7 @@
                     10
                 ],
                 "non_default_constants": {
-                    "inputs:intensity": 5.0,
-                    "inputs:shaping:focusTint": [
-                        0.0,
-                        0.0,
-                        0.0
-                    ]
+                    "inputs:intensity": 5.0
                 },
                 "varying": {
                     "inputs:width": {
@@ -1102,12 +1469,7 @@
                 ],
                 "non_default_constants": {
                     "inputs:intensity": 5.0,
-                    "inputs:normalize": true,
-                    "inputs:shaping:focusTint": [
-                        0.0,
-                        0.0,
-                        0.0
-                    ]
+                    "inputs:normalize": true
                 },
                 "varying": {
                     "inputs:width": {
@@ -1127,11 +1489,6 @@
                 "non_default_constants": {
                     "inputs:enableColorTemperature": true,
                     "inputs:intensity": 5.0,
-                    "inputs:shaping:focusTint": [
-                        0.0,
-                        0.0,
-                        0.0
-                    ],
                     "inputs:width": 2.0
                 },
                 "varying": {
@@ -1151,11 +1508,6 @@
                 ],
                 "non_default_constants": {
                     "inputs:intensity": 125.0,
-                    "inputs:shaping:focusTint": [
-                        0.0,
-                        0.0,
-                        0.0
-                    ],
                     "inputs:width": 2.0
                 },
                 "varying": {
@@ -1176,11 +1528,6 @@
                 "non_default_constants": {
                     "inputs:intensity": 5.0,
                     "inputs:shaping:cone:angle": 45.0,
-                    "inputs:shaping:focusTint": [
-                        0.0,
-                        0.0,
-                        0.0
-                    ],
                     "inputs:width": 2.0
                 },
                 "varying": {
@@ -1200,11 +1547,6 @@
                 ],
                 "non_default_constants": {
                     "inputs:intensity": 5.0,
-                    "inputs:shaping:focusTint": [
-                        0.0,
-                        0.0,
-                        0.0
-                    ],
                     "inputs:width": 2.0
                 },
                 "varying": {
@@ -1285,60 +1627,58 @@
             {
                 "frames": [
                     46,
-                    50
+                    54
                 ],
                 "non_default_constants": {
                     "inputs:exposure": -11.0,
                     "inputs:intensity": 5.0,
-                    "inputs:shaping:focusTint": [
-                        0.0,
-                        0.0,
-                        0.0
-                    ],
-                    "inputs:shaping:ies:file": "../bega_omni002_4777lm.ies",
+                    "inputs:shaping:ies:file": "../ies/bega_omni002_4777lm.ies",
                     "inputs:width": 2.0
                 },
                 "varying": {
                     "inputs:shaping:ies:angleScale": {
-                        "46": -1.0,
-                        "47": -0.5,
-                        "48": 0.0,
-                        "49": 0.5,
-                        "50": 1.0
+                        "46": -2.0,
+                        "47": -1.5,
+                        "48": -1.0,
+                        "49": -0.5,
+                        "50": 0.0,
+                        "51": 0.5,
+                        "52": 1.0,
+                        "53": 1.5,
+                        "54": 2.0
                     }
                 }
             },
             {
                 "frames": [
-                    51,
-                    55
+                    55,
+                    63
                 ],
                 "non_default_constants": {
-                    "inputs:shaping:focusTint": [
-                        0.0,
-                        0.0,
-                        0.0
-                    ],
-                    "inputs:shaping:ies:file": "../bega_omni002_4777lm.ies",
+                    "inputs:shaping:ies:file": "../ies/bega_omni002_4777lm.ies",
                     "inputs:shaping:ies:normalize": true,
                     "inputs:width": 2.0
                 },
                 "varying": {
                     "inputs:shaping:ies:angleScale": {
-                        "51": -1.0,
-                        "52": -0.5,
-                        "53": 0.0,
-                        "54": 0.5,
-                        "55": 1.0
+                        "55": -2.0,
+                        "56": -1.5,
+                        "57": -1.0,
+                        "58": -0.5,
+                        "59": 0.0,
+                        "60": 0.5,
+                        "61": 1.0,
+                        "62": 1.5,
+                        "63": 2.0
                     }
                 }
             }
         ],
         "frames": [
             1,
-            55
+            63
         ],
-        "usd_path": "C:\\src\\NVIDIA\\luxtest\\usd\\rect.usda"
+        "usd_path": "usd/rect.usda"
     },
     "sphere": {
         "attrs": [
@@ -1363,12 +1703,7 @@
                     5
                 ],
                 "non_default_constants": {
-                    "inputs:intensity": 5.0,
-                    "inputs:shaping:focusTint": [
-                        0.0,
-                        0.0,
-                        0.0
-                    ]
+                    "inputs:intensity": 5.0
                 },
                 "varying": {}
             },
@@ -1378,12 +1713,7 @@
                     10
                 ],
                 "non_default_constants": {
-                    "inputs:intensity": 5.0,
-                    "inputs:shaping:focusTint": [
-                        0.0,
-                        0.0,
-                        0.0
-                    ]
+                    "inputs:intensity": 5.0
                 },
                 "varying": {
                     "inputs:radius": {
@@ -1402,12 +1732,7 @@
                 ],
                 "non_default_constants": {
                     "inputs:intensity": 5.0,
-                    "inputs:normalize": true,
-                    "inputs:shaping:focusTint": [
-                        0.0,
-                        0.0,
-                        0.0
-                    ]
+                    "inputs:normalize": true
                 },
                 "varying": {
                     "inputs:radius": {
@@ -1426,12 +1751,7 @@
                 ],
                 "non_default_constants": {
                     "inputs:enableColorTemperature": true,
-                    "inputs:intensity": 5.0,
-                    "inputs:shaping:focusTint": [
-                        0.0,
-                        0.0,
-                        0.0
-                    ]
+                    "inputs:intensity": 5.0
                 },
                 "varying": {
                     "inputs:colorTemperature": {
@@ -1450,12 +1770,7 @@
                 ],
                 "non_default_constants": {
                     "inputs:intensity": 125.0,
-                    "inputs:radius": 0.10000000149011612,
-                    "inputs:shaping:focusTint": [
-                        0.0,
-                        0.0,
-                        0.0
-                    ]
+                    "inputs:radius": 0.10000000149011612
                 },
                 "varying": {
                     "inputs:shaping:cone:angle": {
@@ -1474,12 +1789,7 @@
                 ],
                 "non_default_constants": {
                     "inputs:intensity": 5.0,
-                    "inputs:shaping:cone:angle": 45.0,
-                    "inputs:shaping:focusTint": [
-                        0.0,
-                        0.0,
-                        0.0
-                    ]
+                    "inputs:shaping:cone:angle": 45.0
                 },
                 "varying": {
                     "inputs:shaping:cone:softness": {
@@ -1497,12 +1807,7 @@
                     35
                 ],
                 "non_default_constants": {
-                    "inputs:intensity": 5.0,
-                    "inputs:shaping:focusTint": [
-                        0.0,
-                        0.0,
-                        0.0
-                    ]
+                    "inputs:intensity": 5.0
                 },
                 "varying": {
                     "inputs:shaping:focus": {
@@ -1580,66 +1885,216 @@
             {
                 "frames": [
                     46,
-                    50
+                    54
                 ],
                 "non_default_constants": {
                     "inputs:exposure": -11.0,
                     "inputs:intensity": 5.0,
-                    "inputs:shaping:focusTint": [
-                        0.0,
-                        0.0,
-                        0.0
-                    ],
-                    "inputs:shaping:ies:file": "../bega_omni002_4777lm.ies"
+                    "inputs:shaping:ies:file": "../ies/bega_omni002_4777lm.ies"
                 },
                 "varying": {
                     "inputs:shaping:ies:angleScale": {
-                        "46": -1.0,
-                        "47": -0.5,
-                        "48": 0.0,
-                        "49": 0.5,
-                        "50": 1.0
+                        "46": -2.0,
+                        "47": -1.5,
+                        "48": -1.0,
+                        "49": -0.5,
+                        "50": 0.0,
+                        "51": 0.5,
+                        "52": 1.0,
+                        "53": 1.5,
+                        "54": 2.0
                     }
                 }
             },
             {
                 "frames": [
-                    51,
-                    55
+                    55,
+                    63
                 ],
                 "non_default_constants": {
-                    "inputs:shaping:focusTint": [
-                        0.0,
-                        0.0,
-                        0.0
-                    ],
-                    "inputs:shaping:ies:file": "../bega_omni002_4777lm.ies",
+                    "inputs:shaping:ies:file": "../ies/bega_omni002_4777lm.ies",
                     "inputs:shaping:ies:normalize": true
                 },
                 "varying": {
                     "inputs:shaping:ies:angleScale": {
-                        "51": -1.0,
-                        "52": -0.5,
-                        "53": 0.0,
-                        "54": 0.5,
-                        "55": 1.0
+                        "55": -2.0,
+                        "56": -1.5,
+                        "57": -1.0,
+                        "58": -0.5,
+                        "59": 0.0,
+                        "60": 0.5,
+                        "61": 1.0,
+                        "62": 1.5,
+                        "63": 2.0
                     }
                 }
             }
         ],
         "frames": [
             1,
-            55
+            63
         ],
-        "usd_path": "C:\\src\\NVIDIA\\luxtest\\usd\\sphere.usda"
+        "usd_path": "usd/sphere.usda"
     },
     "visibleRect": {
-        "attrs": [],
-        "frame_groups": [],
+        "attrs": [
+            "xformOp:transform"
+        ],
+        "frame_groups": [
+            {
+                "frames": [
+                    1,
+                    5
+                ],
+                "non_default_constants": {},
+                "varying": {
+                    "xformOp:transform": {
+                        "1": [
+                            [
+                                1.0,
+                                0.0,
+                                0.0,
+                                0.0
+                            ],
+                            [
+                                0.0,
+                                1.0,
+                                0.0,
+                                0.0
+                            ],
+                            [
+                                0.0,
+                                0.0,
+                                1.0,
+                                0.0
+                            ],
+                            [
+                                0.0,
+                                0.0,
+                                0.0,
+                                1.0
+                            ]
+                        ],
+                        "2": [
+                            [
+                                0.9396926207859084,
+                                0.0,
+                                -0.3420201433256687,
+                                0.0
+                            ],
+                            [
+                                0.0,
+                                1.0,
+                                0.0,
+                                0.0
+                            ],
+                            [
+                                0.3420201433256687,
+                                0.0,
+                                0.9396926207859084,
+                                0.0
+                            ],
+                            [
+                                0.0,
+                                0.0,
+                                0.0,
+                                1.0
+                            ]
+                        ],
+                        "3": [
+                            [
+                                0.766044443118978,
+                                0.0,
+                                -0.6427876096865393,
+                                0.0
+                            ],
+                            [
+                                0.0,
+                                1.0,
+                                0.0,
+                                0.0
+                            ],
+                            [
+                                0.6427876096865393,
+                                0.0,
+                                0.766044443118978,
+                                0.0
+                            ],
+                            [
+                                0.0,
+                                0.0,
+                                0.0,
+                                1.0
+                            ]
+                        ],
+                        "4": [
+                            [
+                                0.5000000000000001,
+                                0.0,
+                                -0.8660254037844386,
+                                0.0
+                            ],
+                            [
+                                0.0,
+                                1.0,
+                                0.0,
+                                0.0
+                            ],
+                            [
+                                0.8660254037844386,
+                                0.0,
+                                0.5000000000000001,
+                                0.0
+                            ],
+                            [
+                                0.0,
+                                0.0,
+                                0.0,
+                                1.0
+                            ]
+                        ],
+                        "5": [
+                            [
+                                0.17364817766693041,
+                                0.0,
+                                -0.984807753012208,
+                                0.0
+                            ],
+                            [
+                                0.0,
+                                1.0,
+                                0.0,
+                                0.0
+                            ],
+                            [
+                                0.984807753012208,
+                                0.0,
+                                0.17364817766693041,
+                                0.0
+                            ],
+                            [
+                                0.0,
+                                0.0,
+                                0.0,
+                                1.0
+                            ]
+                        ]
+                    }
+                }
+            },
+            {
+                "frames": [
+                    6,
+                    10
+                ],
+                "non_default_constants": {},
+                "varying": {}
+            }
+        ],
         "frames": [
             1,
-            1
+            10
         ],
-        "usd_path": "C:\\src\\NVIDIA\\luxtest\\usd\\visibleRect.usda"
+        "usd_path": "usd/visibleRect.usda"
     }
 }

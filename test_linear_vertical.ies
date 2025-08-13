@@ -1,8 +1,0 @@
-IESNA:LM-63-1995
-[DESCRIPTION] ies file for testing - linear map from vertical angle, 0=>1 and 180=>0
-TILT=NONE
-1 -1 1.0 2 1 1 2 1.000 1.000 1.000
-1.0 1.0 100
-   0.0   180.0
-   0.0
-   1.0   0.0

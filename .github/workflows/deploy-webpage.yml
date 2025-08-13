@@ -1,0 +1,44 @@
+name: deploy-webpage
+run-name: "Manual run: deploy-webpage #${{ github.run_number }} - by @${{ github.actor }} - ${{ github.ref_name }}@${{ github.workflow_sha }}"
+
+on: workflow_dispatch
+
+jobs:
+    build:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@master
+            - uses: actions/setup-node@master
+              with:
+                  python-version: ">= 3.10"
+                  architecture: "x64"
+            - name: Install uv
+              uses: astral-sh/setup-uv@v5
+              with:
+                  # Install a specific version of uv.
+                  version: "0.7.12"
+            - name: "Set up Python"
+              uses: actions/setup-python@v5
+              with:
+                  python-version-file: ".python-version"
+            - name: Install python dependencies
+              run: uv sync --locked --group usd
+            - name: Run gendiffs.py
+              run: uv run ./gendiffs.py
+            - uses: actions/upload-pages-artifact@master
+              with:
+                  path: web
+                  if-no-files-found: error
+    deploy:
+        needs: build
+        permissions:
+            pages: write
+            id-token: write
+        environment:
+            name: github-pages
+            url: ${{ steps.deployment.outputs.page_url }}
+        runs-on: ubuntu-latest
+        steps:
+            - name: Deploy to Github Pages
+              id: deployment
+              uses: actions/deploy-pages@master

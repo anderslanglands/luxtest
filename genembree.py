@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+# no hashbang - use .sh wrapper script
 
 """Run the UsdLux_2 test suite"""
 
@@ -12,7 +12,10 @@ import sys
 import traceback
 
 from glob import glob
-from typing import Callable, Iterable, List, NamedTuple, Optional, Tuple
+from types import NoneType
+from typing import Callable, Iterable, List, NamedTuple, Optional
+
+from tqdm import tqdm
 
 ###############################################################################
 # Constants
@@ -27,19 +30,14 @@ if THIS_DIR not in sys.path:
 import combine_ies_test_images
 import genLightParamDescriptions
 import luxtest_utils
-import pip_import
 
-pip_import.pip_import("tqdm")
-
-from tqdm import tqdm
-
-from genLightParamDescriptions import FrameRange
+from luxtest_utils import FrameRange
 
 EMBREE_DELEGATE = "Embree"
 DEFAULT_DELEGATES = (EMBREE_DELEGATE,)
 DEFAULT_INCLUDE_GLOBS = (os.path.join(THIS_DIR, "usd", "*.usda"),)
 DEFAULT_EXCLUDE_GLOBS = ()
-DEFAULT_OUTPUT_DIR = os.path.join(THIS_DIR, "renders")
+DEFAULT_OUTPUT_DIR = luxtest_utils.get_renders_root()
 DEFAULT_RESOLUTION = 512
 DEFAULT_CAMERAS = ("/cameras/camera1",)
 DEFAULT_CAMERAS_BY_USD = {
@@ -128,7 +126,8 @@ def run_tests(
     -------
     failures: List[UsdRecordCommand]
     """
-    nullLight = genLightParamDescriptions.LightParamDescription.empty()
+    if not isinstance(frames, (FrameRange, NoneType)):
+        raise TypeError("input frames must be FrameRange | None")
 
     light_descriptions = genLightParamDescriptions.read_descriptions()
 
@@ -179,7 +178,19 @@ def run_tests(
             base = os.path.splitext(input_file)[0]
 
             if frames is None:
-                test_frames = light_descriptions.get(base, nullLight).frames
+                light_desc = light_descriptions.get(base)
+                if light_desc is None:
+                    known_lights = sorted(light_descriptions)
+                    raise ValueError(
+                        f"could not find light {base!r} in light_descriptions - known lights: {known_lights}"
+                    )
+                test_frames = light_desc.frames
+
+                if not isinstance(test_frames, (FrameRange, NoneType)):
+                    raise TypeError(
+                        "light_description frames must be FrameRange | None - got:"
+                        f" {test_frames} ({type(test_frames).__name__})"
+                    )
             else:
                 test_frames = frames
 
@@ -362,7 +373,7 @@ def run_test(
         frame_callback()
 
     if current_line:
-        process_text("".join(current_line))
+        process_text(b"".join(current_line))
     return proc.returncode
 
 

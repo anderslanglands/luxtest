@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+# no hashbang - use .sh wrapper script
 
 """Generate .json file describing the various parameters for each light"""
 
@@ -12,25 +12,28 @@ import os
 import sys
 import traceback
 
-from typing import Any, Dict, Iterable, List, NamedTuple, Optional, Tuple, TypeAlias, Union
+from typing import Any, Dict, Iterable, List, Optional, Tuple, TypeAlias, Union
 
-from pxr import Gf, Sdf, Usd, UsdLux
-
-IntFloat: TypeAlias = Union[int, float]
+from pxr import Sdf, Usd, UsdLux
 
 THIS_FILE = os.path.abspath(inspect.getsourcefile(lambda: None) or __file__)
 THIS_DIR = os.path.dirname(THIS_FILE)
-USD_DIR = os.path.join(THIS_DIR, "usd")
-
 
 if THIS_DIR not in sys.path:
     sys.path.append(THIS_DIR)
 
 import luxtest_const
 
+from luxtest_utils import FrameRange
+
+IntFloat: TypeAlias = Union[int, float]
+
+
 ###############################################################################
 # Constants
 ###############################################################################
+
+USD_DIR = os.path.join(THIS_DIR, "usd")
 
 LIGHT_NAME_SUFFIX = "_light"
 OUTPUT_JSON_PATH = os.path.join(THIS_DIR, "light_descriptions.json")
@@ -39,27 +42,31 @@ USD_EXTENSIONS = (".usd", ".usda", ".usdc")
 MISSING = object()
 
 AREA_LIGHT_SUMMARY_OVERRIDES = {
-    (1, 5): "light rotate worldZ from 0 to 60",
-    (41, 45): "focusTint from black to green to white",
+    FrameRange(1, 5): "light rotate worldZ from 0 to 60",
+    FrameRange(41, 45): "focusTint from black to green to white",
 }
 
 SUMMARY_OVERRIDES = {
     "distant": {
-        (1, 5): "light rotate worldZ from 0 to 80",
-        (6, 10): "cam rotate from 0 to 80",
+        FrameRange(1, 5): "light rotate X from -90 to -10",
+        FrameRange(6, 10): "cam rotate Z from 0 to 80",
     },
     "iesTest": {
-        (1, 1): "ies:angleScale=0 ref",
-        (11, 11): "ies:angleScale=0 ref",
-        (21, 21): "ies:angleScale=0 ref",
-        (31, 21): "ies:angleScale=0 ref",
-        (41, 31): "no ies:file ref",
+        FrameRange(1, 1): "ies:angleScale=0 ref",
+        FrameRange(11, 11): "ies:angleScale=0 ref",
+        FrameRange(21, 21): "ies:angleScale=0 ref",
+    },
+    "visibleRect": {
+        FrameRange(1, 5): "light rotate Y from 0 to 80",
+        FrameRange(6, 10): "camera rotate Y from 0 to -80",
     },
 }
 
 for area_light in ("sphere", "disk", "cylinder", "rect"):
     SUMMARY_OVERRIDES[area_light] = dict(AREA_LIGHT_SUMMARY_OVERRIDES)
 del area_light
+
+SUMMARY_OVERRIDES["iesLibPreview"] = SUMMARY_OVERRIDES["iesTest"]
 
 COLOR_NAMES = {
     (0.0, 0.0, 0.0): "black",
@@ -100,14 +107,32 @@ def is_sorted(vals: Iterable):
     return True
 
 
+def _standardize_val_for_comparison(val):
+    if type(val).__name__.startswith("Matrix"):
+        flat = []
+        for vec in val:
+            flat.extend(list(vec))
+        return flat
+    elif type(val).__name__.startswith("Vec"):
+        return list(val)
+    if isinstance(val, (str, bytes)):
+        return val
+    try:
+        iter(val)
+    except Exception:
+        return val
+    # standardize all iterables as lists
+    return list(val)
+
+
 def vals_close(val1, val2):
+    val1 = _standardize_val_for_comparison(val1)
+    val2 = _standardize_val_for_comparison(val2)
     if isinstance(val1, float) or isinstance(val2, float):
         return math.isclose(val1, val2)
     elif type(val1) != type(val2):
         return False
-    elif type(val1).__name__.startswith("Matrix") or type(val1).__name__.startswith("Vec"):
-        return Gf.IsClose(val1, val2)
-    elif isinstance(val1, (list, tuple)):
+    elif isinstance(val1, list):
         if len(val1) != len(val2):
             return False
         return all(vals_close(v1, v2) for v1, v2 in zip(val1, val2))
@@ -178,6 +203,17 @@ def format_attr(attr_name):
     return ":".join(split)
 
 
+def get_all_light_names() -> Tuple[str, ...]:
+    try:
+        light_descriptions = read_descriptions()
+        return tuple(sorted(light_descriptions))
+    except Exception as err:
+        print("Error reading light names from light_descriptions.json:")
+        print(err)
+        print("...using default light names")
+        return luxtest_const.DEFAULT_LIGHTS
+
+
 def get_light_name(light):
     if isinstance(light, Usd.Prim):
         light = light.GetName()
@@ -221,42 +257,16 @@ def find_usds(path: str, recurse=False):
     return paths
 
 
-def get_override_group(light_name, frame):
-    for start_end in SUMMARY_OVERRIDES.get(light_name, {}).keys():
-        if frame >= start_end[0] and frame <= start_end[1]:
-            return start_end
+def get_override_group(light_name, frame) -> Optional[FrameRange]:
+    for frame_range in SUMMARY_OVERRIDES.get(light_name, {}).keys():
+        if frame_range.has_frame(frame):
+            return frame_range
     return None
 
 
 ###############################################################################
 # Dataclasses
 ###############################################################################
-
-
-class FrameRange(NamedTuple):
-    start: int
-    end: int
-
-    @property
-    def num_frames(self):
-        return self.end - self.start + 1
-
-    def __str__(self):
-        return f"{self.start}:{self.end}"
-
-    @classmethod
-    def from_str(cls, frames_str) -> "FrameRange":
-        if ":" in frames_str:
-            split = frames_str.split(":")
-            if len(split) > 2:
-                raise ValueError(
-                    f"frames may only have a single ':', to denote start:end (inclusive) - got: {args.frames}"
-                )
-            frames = tuple(int(x) for x in split)
-        else:
-            frame = int(frames_str)
-            frames = (frame, frame)
-        return cls(*frames)
 
 
 @dataclasses.dataclass
@@ -528,7 +538,7 @@ class FrameGroupTracker:
                 del constants[key]
 
         return FrameGroup(
-            frames=(start, end),
+            frames=FrameRange(start, end),
             varying=varying_vals,
             non_default_constants=constants,
         )
@@ -576,9 +586,17 @@ class LightParamDescription:
     frames: FrameRange  # start/end
     attrs: List[str]
 
-    @classmethod
-    def empty(cls):
-        return cls("", [], (1, 1), [])
+    def make_usd_path_relative(self, output_dir: str):
+        self.usd_path = os.path.relpath(self.usd_path, output_dir)
+        # standardize on linux-style separators
+        if os.path.sep != "/":
+            self.usd_path = self.usd_path.replace(os.path.sep, "/")
+
+    def make_usd_path_absolute(self, output_dir: str):
+        if not os.path.isabs(self.usd_path):
+            self.usd_path = os.path.join(output_dir, self.usd_path)
+        if os.path.sep != "/":
+            self.usd_path = self.usd_path.replace("/", os.path.sep)
 
     @classmethod
     def from_dict(cls, data):
@@ -612,17 +630,18 @@ class LightParamDescription:
             start = math.floor(all_samples[0])
             end = int(all_samples[-1])
         light_overrides = SUMMARY_OVERRIDES.get(light_name, {})
-        for override_start, override_end in light_overrides:
-            start = min(start, override_start)
-            end = max(end, override_end)
+        for override_range in light_overrides:
+            start = min(start, override_range.start)
+            end = max(end, override_range.end)
         if start == math.inf:
             start = end = 1
 
+        frame_range = FrameRange(start, end)
         if not all_samples:
             # constant
-            return cls(usd_path=usd_path, frame_groups=[], frames=(start, end), attrs=[])
+            return cls(usd_path=usd_path, frame_groups=[], frames=frame_range, attrs=[])
 
-        frames_list = list(range(start, end + 1))
+        frames_list = list(frame_range.iter_frames())
         frame_groups = FrameGroupFinder.find(light_name, all_attrs=attrs, all_frames=frames_list)
         attr_names = [x.GetName() for x in attrs]
 
@@ -633,7 +652,7 @@ class LightParamDescription:
             all_varying.update(group.varying)
         attr_names = [x for x in attr_names if not x.startswith("xformOp:") or x in all_varying]
 
-        return cls(usd_path=usd_path, frame_groups=frame_groups, frames=(start, end), attrs=attr_names)
+        return cls(usd_path=usd_path, frame_groups=frame_groups, frames=frame_range, attrs=attr_names)
 
 
 class DataclassJsonEncoder(json.JSONEncoder):
@@ -654,10 +673,15 @@ def write_light_param_descriptions(path: str, recurse: bool = False, json_out_pa
     if not usd_paths:
         raise ValueError(f"Could not find any USD files at path: {path}")
     descriptions = {}
+    output_dir = os.path.dirname(os.path.abspath(json_out_path))
     for usd_path in usd_paths:
         stage = Usd.Stage.Open(usd_path)
         print(f"Processing: {usd_path}")
         descriptions.update(gen_light_param_descriptions(stage, errors=errors))
+
+    # Prep for serializing but making paths relative + linux
+    for description in descriptions.values():
+        description.make_usd_path_relative(output_dir)
 
     print(f"Got {len(descriptions)} descriptions")
     print("=" * 80)
@@ -667,19 +691,18 @@ def write_light_param_descriptions(path: str, recurse: bool = False, json_out_pa
         print(summarize_light(light_name, desc))
     print("=" * 80)
     print(f"Writing as json: {json_out_path}")
-    with open(json_out_path, "w", encoding="utf8") as writer:
+    with open(json_out_path, "w", encoding="utf8", newline="\n") as writer:
         json.dump(descriptions, writer, sort_keys=True, indent=4, cls=DataclassJsonEncoder)
     return
 
 
-def find_summary_override(light_name: str, start: int, end: int):
+def find_summary_override(light_name: str, frame_range: FrameRange):
     light_overrides = SUMMARY_OVERRIDES.get(light_name)
     if light_overrides is None:
         return None
-    for frames, desc in light_overrides.items():
-        override_start, override_end = frames
-        if override_start <= start and end <= override_end:
-            return frames, desc
+    for override_frames, desc in light_overrides.items():
+        if override_frames.issuperset(frame_range):
+            return override_frames, desc
     return None
 
 
@@ -689,16 +712,13 @@ def get_light_group_summaries(light_name, light_description):
 
     summaries_by_start_frame = {}
     for group in light_description.frame_groups:
-        start, end = group.frames
+        frame_range = group.frames
 
         frame_desc = ""
-        override_desc = ""
         varying_desc = ""
-        override = find_summary_override(light_name, start, end)
+        override = find_summary_override(light_name, frame_range)
         if override is not None:
-            override_frames, override_desc = override
-            start, end = override_frames
-            varying_desc = override_desc
+            frame_range, varying_desc = override
         elif not group.varying:
             frame_desc = "(constant)"
         if not frame_desc:
@@ -706,7 +726,8 @@ def get_light_group_summaries(light_name, light_description):
                 varying_descs = []
                 for varying_attr, vals in group.varying.items():
                     varying_descs.append(
-                        f"{format_attr(varying_attr)} from {format_val(vals[start])} to {format_val(vals[end])}"
+                        f"{format_attr(varying_attr)} from {format_val(vals[frame_range.start])} to"
+                        f" {format_val(vals[frame_range.end])}"
                     )
                 varying_desc = ", ".join(varying_descs)
 
@@ -721,12 +742,7 @@ def get_light_group_summaries(light_name, light_description):
                 constants_desc = f" ({constants_desc})"
             frame_desc = f"{varying_desc}{constants_desc}"
 
-        if start == end:
-            frame_str = str(start)
-        else:
-            frame_str = f"{start}-{end}"
-
-        summaries_by_start_frame[start] = f"{frame_str}: {frame_desc}"
+        summaries_by_start_frame[frame_range.start] = f"{frame_range.display_str()}: {frame_desc}"
     return summaries_by_start_frame
 
 
@@ -766,8 +782,16 @@ def gen_light_param_descriptions(stage: Usd.Stage, errors="raise"):
 def read_descriptions(path=OUTPUT_JSON_PATH):
     with open(path, "r", encoding="utf8") as reader:
         raw_data = json.load(reader)
+
+    output_dir = os.path.dirname(os.path.abspath(path))
+    descriptions = {}
     # convert back to LightParamDescription objects
-    return {name: LightParamDescription.from_dict(data) for name, data in raw_data.items()}
+    for name, data in raw_data.items():
+        light_description = LightParamDescription.from_dict(data)
+        # convert usd_path back to absolute, and OS-specific
+        light_description.make_usd_path_relative(output_dir)
+        descriptions[name] = light_description
+    return descriptions
 
 
 ###############################################################################

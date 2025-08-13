@@ -1,9 +1,12 @@
 # Unix-style newlines by default
-[*]
+[*.{bash,css,editorconfig,flake8,gitattributes,gitignore,hip,html,ies,json,md,py,pylintrc,python-version,sh,toml,usda,yml}]
 end_of_line = lf
 trim_trailing_whitespace = true
 indent_style = space
 indent_size = 4
 
-[*.{bat,cmd,ps1}]
+[*.{hip,usda}]
+trim_trailing_whitespace = false
+
+[*.{bat,cmd,ies,ps1}]
 end_of_line = crlf

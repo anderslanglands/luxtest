@@ -1,5 +1,4 @@
-#!/usr/bin/env python
-
+# no hashbang - use .sh wrapper script
 
 """Generate a web page showing UsdLux image diffs
 
@@ -17,10 +16,13 @@ import os
 import shutil
 import subprocess
 import sys
+import sysconfig
 import textwrap
 import traceback
 
-from typing import Dict, Iterable
+from typing import Dict, Iterable, Optional
+
+import tqdm.asyncio
 
 ###############################################################################
 # Constants
@@ -33,23 +35,10 @@ if THIS_DIR not in sys.path:
     sys.path.append(THIS_DIR)
 
 import genLightParamDescriptions
+import luxtest_const
 import luxtest_utils
-import pip_import
 
-pip_import.pip_import("tqdm")
-import tqdm.asyncio
-
-RENDERS_DIR_NAME = "renders"
-RENDERS_ROOT = os.path.join(THIS_DIR, RENDERS_DIR_NAME)
-WEB_DIR_NAME = "web"
-WEB_ROOT = os.path.join(THIS_DIR, WEB_DIR_NAME)
-WEB_IMG_ROOT = os.path.join(WEB_ROOT, "img")
-
-RENDERERS = [
-    "karma",
-    "ris",
-    "arnold",
-]
+from luxtest_utils import FrameRange, get_image_path, get_image_url
 
 OUTPUT_DIR = "diff"
 
@@ -81,20 +70,7 @@ HTML_END = """<!DOCTYPE html>
   </body>
 """
 
-OIIOTOOL = os.environ.get("LUXTEST_OIIOTOOL", "oiiotool")
-
 NUM_CPUS = multiprocessing.cpu_count()
-
-# if we can't read light_descriptions, use this
-FALLBACK_LIGHTS = (
-    "cylinder",
-    "disk",
-    "distant",
-    "dome",
-    "rect",
-    "sphere",
-    "visibleRect",
-)
 
 SKIP_LIGHTS = ("ies_scale",)
 
@@ -123,7 +99,7 @@ else:
 
 
 def normalize_concurrency(concurrency: int):
-    if concurrency < 0:
+    if concurrency <= 0:
         concurrency += NUM_CPUS
     return max(concurrency, 1)
 
@@ -132,29 +108,6 @@ def needs_update(existing, dependent):
     if os.path.exists(dependent):
         return os.path.getmtime(existing) > os.path.getmtime(dependent)
     return True
-
-
-def iter_frames(light_description):
-    start, end = light_description.frames
-    return range(start, end + 1)
-
-
-def get_image_path(light_name, renderer: str, frame: int, ext: str, prefix=""):
-    ext = ext.lstrip(".")
-    filename = f"{prefix}{light_name}-{renderer}.{frame:04}.{ext}"
-    if ext == "png":
-        base_dir = WEB_IMG_ROOT
-    elif ext == "exr":
-        base_dir = os.path.join(RENDERS_ROOT, renderer)
-    else:
-        raise ValueError(f"unrecognized extension: {ext}")
-    return os.path.join(base_dir, filename)
-
-
-def get_image_url(light_name, renderer: str, frame: int, ext: str, prefix=""):
-    image_path = get_image_path(light_name, renderer, frame, ext, prefix=prefix)
-    rel_path = os.path.relpath(image_path, WEB_ROOT)
-    return rel_path.replace(os.sep, "/")
 
 
 def print_streams(proc: subprocess.CompletedProcess):
@@ -179,10 +132,12 @@ def raise_proc_error(proc: subprocess.CompletedProcess, verbose: bool):
     raise subprocess.CalledProcessError(proc.returncode, proc.args, proc.stdout, proc.stderr)
 
 
-async def run(args: Iterable[str], check=False, verbose=False):
+async def run(args: Iterable[str], check=False, verbose=False, **kwargs):
     if verbose:
         print(f"Running: {to_shell_cmd(args)}")
-    proc = await asyncio.create_subprocess_exec(args[0], *args[1:], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    proc = await asyncio.create_subprocess_exec(
+        args[0], *args[1:], stdout=subprocess.PIPE, stderr=subprocess.PIPE, **kwargs
+    )
     stdout, stderr = await proc.communicate()
     completed_proc = subprocess.CompletedProcess(args=args, returncode=proc.returncode, stdout=stdout, stderr=stderr)
     if verbose:
@@ -196,6 +151,32 @@ async def run(args: Iterable[str], check=False, verbose=False):
     return completed_proc
 
 
+def _calc_oiiotool_path() -> str:
+    oiiotool = os.environ.get("LUXTEST_OIIOTOOL")
+    if oiiotool:
+        return oiiotool
+    oiiotool = shutil.which("oiiotool")
+    if oiiotool:
+        return oiiotool
+    scripts_dir = sysconfig.get_path("scripts")
+    new_path = f"{scripts_dir}{os.pathsep}{os.environ['PATH']}"
+    oiiotool = shutil.which("oiiotool", path=new_path)
+    if oiiotool:
+        return oiiotool
+    raise RuntimeError("Could not find path to oiiotool")
+
+
+OIIOTOOL = _calc_oiiotool_path()
+
+
+async def run_oiiotool(args, verbose=False, **kwargs):
+    cmd = [OIIOTOOL] + list(args)
+    # houdini / hython sets PYTHONHOME, which messes oiiotool up
+    env = kwargs.pop("env", None) or dict(os.environ)
+    env.pop("PYTHONHOME", "")
+    return await run(cmd, verbose=verbose, env=env, **kwargs)
+
+
 ###############################################################################
 # Core functions
 ###############################################################################
@@ -207,7 +188,6 @@ async def update_png(exr_path, png_path, verbose=False):
         if verbose:
             print(f"Creating png: {png_path}")
         cmd = [
-            OIIOTOOL,
             exr_path,
             "--ch",
             "R,G,B",
@@ -217,7 +197,7 @@ async def update_png(exr_path, png_path, verbose=False):
             "-o",
             png_path,
         ]
-        proc = await run(cmd, verbose=verbose, check=True)
+        proc = await run_oiiotool(cmd, verbose=verbose, check=True)
         if not os.path.isfile:
             print(f"Error - output png did not exist: {png_path}")
             raise_proc_error(proc, verbose)
@@ -225,7 +205,6 @@ async def update_png(exr_path, png_path, verbose=False):
 
 async def update_diff(exr_path1, exr_path2, diff_path, verbose=False):
     cmd = [
-        OIIOTOOL,
         exr_path1,
         exr_path2,
         "--diff",
@@ -240,20 +219,39 @@ async def update_diff(exr_path1, exr_path2, diff_path, verbose=False):
         "-o",
         diff_path,
     ]
-    proc = await run(cmd, verbose=verbose)
+    proc = await run_oiiotool(cmd, verbose=verbose)
     if not os.path.isfile:
         print(f"Error - output diff png did not exist: {diff_path}")
         raise_proc_error(proc, verbose)
 
 
-async def gen_images_async(light_descriptions, verbose=False, max_concurrency=-1):
-    flat_frames = []
-    for name, description in light_descriptions.items():
-        for frame in iter_frames(description):
-            flat_frames.append((name, description, frame))
-
+async def gen_images_async(
+    light_descriptions,
+    verbose=False,
+    max_concurrency=-1,
+    renders_root="",
+    do_diffs=True,
+    lights: Optional[Iterable[str]] = None,
+    renderers: Iterable[str] = luxtest_const.RENDERERS,
+    frame_range: Optional[FrameRange] = None,
+):
     all_tasks = []
     num_possible_images = 0
+
+    renderers = list(renderers)
+    if lights is not None:
+        lights = list(lights)
+
+    flat_frames = []
+    for name, description in light_descriptions.items():
+        if lights is not None and name not in lights:
+            continue
+        if frame_range is not None:
+            light_frame_range = frame_range
+        else:
+            light_frame_range = description.frames
+        for frame in light_frame_range.iter_frames():
+            flat_frames.append((name, description, frame))
 
     def queue_png_update(exr_path, png_path):
         nonlocal num_possible_images
@@ -271,17 +269,22 @@ async def gen_images_async(light_descriptions, verbose=False, max_concurrency=-1
     progress = tqdm.tqdm(flat_frames)
     for name, description, frame in progress:
         progress.set_postfix({"name": name, "frame": frame})
-        embree_exr_path = get_image_path(name, "embree", frame, "exr")
-        embree_png_path = get_image_path(name, "embree", frame, "png")
-        queue_png_update(embree_exr_path, embree_png_path)
 
-        for renderer in RENDERERS:
-            renderer_exr_path = get_image_path(name, renderer, frame, "exr")
-            renderer_png_path = get_image_path(name, renderer, frame, "png")
+        if do_diffs:
+            embree_exr_path = get_image_path(name, "embree", frame, "exr", renders_root=renders_root)
+
+        for renderer in renderers:
+            renderer_exr_path = get_image_path(name, renderer, frame, "exr", renders_root=renders_root)
+            renderer_png_path = get_image_path(name, renderer, frame, "png", renders_root=renders_root)
             queue_png_update(renderer_exr_path, renderer_png_path)
 
-            diff_png_path = get_image_path(name, renderer, frame, "png", prefix="diff-")
-            queue_diff_update(embree_exr_path, renderer_exr_path, diff_png_path)
+            # don't need to do a diff of embree with itself!
+            if renderer == "embree":
+                continue
+
+            if do_diffs:
+                diff_png_path = get_image_path(name, renderer, frame, "png", prefix="diff-", renders_root=renders_root)
+                queue_diff_update(embree_exr_path, renderer_exr_path, diff_png_path)
 
     print(f"Generating {len(all_tasks)} images (out of possible {num_possible_images}):")
 
@@ -298,13 +301,15 @@ async def gen_images_async(light_descriptions, verbose=False, max_concurrency=-1
     await tqdm.asyncio.tqdm_asyncio.gather(*limited_tasks)
 
 
-def gen_images(light_descriptions, verbose=False, max_concurrency=-1):
-    asyncio.run(gen_images_async(light_descriptions, verbose, max_concurrency=max_concurrency))
+def gen_images(light_descriptions, verbose=False, max_concurrency=-1, renders_root=""):
+    asyncio.run(
+        gen_images_async(light_descriptions, verbose, max_concurrency=max_concurrency, renders_root=renders_root)
+    )
 
 
-def gen_html(light_descriptions: Dict[str, genLightParamDescriptions.LightParamDescription]):
+def gen_html(light_descriptions: Dict[str, genLightParamDescriptions.LightParamDescription], renders_root=""):
     html = HTML_START
-    num_cols = len(RENDERERS) * 2 + 1
+    num_cols = len(luxtest_const.THIRD_PARTY_RENDERERS) * 2 + 1
 
     # sort first by number of frames (so tests with, ie, only one frame appear at top and are easy to find), then
     # alphabetically
@@ -333,7 +338,7 @@ def gen_html(light_descriptions: Dict[str, genLightParamDescriptions.LightParamD
                 <td>Ref</td>
             """
         )
-        for renderer in RENDERERS:
+        for renderer in luxtest_const.THIRD_PARTY_RENDERERS:
             html += textwrap.dedent(
                 f"""
                     <td>{renderer}</td>
@@ -342,7 +347,7 @@ def gen_html(light_descriptions: Dict[str, genLightParamDescriptions.LightParamD
             )
 
         html += "\n</tr>"
-        for frame in iter_frames(description):
+        for frame in description.frames.iter_frames():
 
             if frame in summaries_by_start_frame:
                 desc = summaries_by_start_frame[frame]
@@ -354,13 +359,13 @@ def gen_html(light_descriptions: Dict[str, genLightParamDescriptions.LightParamD
             html += "  <tr>\n"
             html += f"    <td>{frame:04}</td>"
 
-            embree_url = get_image_url(name, "embree", frame, "png")
+            embree_url = get_image_url(name, "embree", frame, "png", renders_root=renders_root)
 
             html += f'    <td><img src="{embree_url}"</td>\n'
 
-            for renderer in RENDERERS:
-                renderer_url = get_image_url(name, renderer, frame, "png")
-                diff_url = get_image_url(name, renderer, frame, "png", prefix="diff-")
+            for renderer in luxtest_const.THIRD_PARTY_RENDERERS:
+                renderer_url = get_image_url(name, renderer, frame, "png", renders_root=renders_root)
+                diff_url = get_image_url(name, renderer, frame, "png", prefix="diff-", renders_root=renders_root)
 
                 html += f'    <td><img src="{renderer_url}"</td>\n'
                 html += f'    <td><img src="{diff_url}"</td>\n'
@@ -370,13 +375,13 @@ def gen_html(light_descriptions: Dict[str, genLightParamDescriptions.LightParamD
         html += "</table>\n"
     html += HTML_END
 
-    with open(os.path.join(WEB_ROOT, "luxtest.html"), "w", encoding="utf8") as f:
+    with open(os.path.join(luxtest_const.WEB_ROOT, "luxtest.html"), "w", encoding="utf8", newline="\n") as f:
         f.write(html)
 
-    shutil.copyfile("luxtest.css", os.path.join(WEB_ROOT, "luxtest.css"))
+    shutil.copyfile("luxtest.css", os.path.join(luxtest_const.WEB_ROOT, "luxtest.css"))
 
 
-def gen_diffs(verbose=False, max_concurrency=-1, lights: Iterable[str] = ()):
+def gen_diffs(verbose=False, max_concurrency=-1, lights: Iterable[str] = luxtest_const.DEFAULT_LIGHTS):
     start = datetime.datetime.now()
     lights = tuple(lights)  # in case it's an iterable
     light_descriptions = genLightParamDescriptions.read_descriptions()
@@ -384,9 +389,10 @@ def gen_diffs(verbose=False, max_concurrency=-1, lights: Iterable[str] = ()):
     if lights:
         light_descriptions = {light: desc for light, desc in light_descriptions.items() if light in lights}
 
-    os.makedirs(WEB_IMG_ROOT, exist_ok=True)
-    gen_images(light_descriptions, verbose=verbose, max_concurrency=max_concurrency)
-    gen_html(light_descriptions)
+    renders_root = luxtest_utils.get_renders_root()
+    os.makedirs(luxtest_const.WEB_IMG_ROOT, exist_ok=True)
+    gen_images(light_descriptions, verbose=verbose, max_concurrency=max_concurrency, renders_root=renders_root)
+    gen_html(light_descriptions, renders_root=renders_root)
     elapsed = datetime.datetime.now() - start
     print(f"Done generating diffs - took: {elapsed}")
 
@@ -397,14 +403,7 @@ def gen_diffs(verbose=False, max_concurrency=-1, lights: Iterable[str] = ()):
 
 
 def get_parser():
-    try:
-        light_descriptions = genLightParamDescriptions.read_descriptions()
-        light_names = sorted(light_descriptions)
-    except Exception as err:
-        print("Error reading light names from light_descriptions.json:")
-        print(err)
-        print("...using fallback light names")
-        light_names = FALLBACK_LIGHTS
+    all_light_names = genLightParamDescriptions.get_all_light_names()
 
     parser = argparse.ArgumentParser(
         description=__doc__,
@@ -416,18 +415,20 @@ def get_parser():
         type=int,
         default="-1",
         help=(
-            "Number of oiiotool procs to run in parallel; negative values are subtracted from"
-            " multiprocessing.cpu_count()"
+            "Number of oiiotool procs to run in parallel; 0 means use multiprocessing.cpu_count(); negative values are"
+            " subtracted from multiprocessing.cpu_count()"
         ),
     )
     parser.add_argument(
         "-l",
-        "--light",
-        choices=light_names,
-        action="append",
-        dest="lights",
+        "--lights",
+        metavar="LIGHT",
+        choices=all_light_names,
+        nargs="+",
+        default=luxtest_const.DEFAULT_LIGHTS,
         help=(
-            "Only render images for the given lights; if not specified, render images for all lights. May be repeated."
+            f"Only render images for the given light(s).  Choices: {all_light_names}.  If not specified, render"
+            " images for the set of default lights."
         ),
     )
     return parser
@@ -439,7 +440,7 @@ def main(argv=None):
     parser = get_parser()
     args = parser.parse_args(argv)
     try:
-        gen_diffs(verbose=args.verbose, max_concurrency=args.j, lights=args.lights or ())
+        gen_diffs(verbose=args.verbose, max_concurrency=args.j, lights=args.lights)
     except Exception:  # pylint: disable=broad-except
 
         traceback.print_exc()

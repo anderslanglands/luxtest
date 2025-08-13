@@ -139,7 +139,7 @@ def Xform "lights"
             19: 0.98188657,
             20: 1,
         }
-        asset inputs:shaping:ies:file = @../bega_84693k4.ies@
+        asset inputs:shaping:ies:file = @../ies/bega_84693k4.ies@
         bool inputs:shaping:ies:normalize = 0
         float inputs:specular = 1
         rel light:filters = None

@@ -264,8 +264,8 @@ def get_all_animated_parms(root_node="/", include: NodeOrReOrIterable = (), excl
     return all
 
 
-def select_all_animated_parms(root_node="/"):
-    parms = get_all_animated_parms(root_node)
+def select_all_animated_parms(root_node="/", **kwargs):
+    parms = get_all_animated_parms(root_node, **kwargs)
     for p in parms:
         p.setSelect(True)
     return parms
@@ -499,8 +499,12 @@ def get_light(name):
     return hou.node(f"/stage/{name}_light")
 
 
+def prim_basename(prim_name: str):
+    return prim_name.rstrip("/").rsplit("/", 1)[-1]
+
+
 def get_rop_override_cam(rop):
-    return rop.parm("override_camera").eval().rstrip("/").rsplit("/", 1)[-1]
+    return prim_basename(rop.parm("override_camera").eval())
 
 
 def get_standardized_name(node, associated_light_node):
@@ -524,10 +528,16 @@ def get_standardized_name(node, associated_light_node):
             prim_path = node.parm("primpath").eval()
         else:
             prim_path = node.parm("primpattern").eval()
-        prim_name = prim_path.rstrip("/").rsplit("/", 1)[-1]
+        prim_name = prim_basename(prim_path)
         return f"{category}_{cam_node_type}_{prim_name}_{light_name}"
     elif category == "xform":
-        prim_name = node.parm("primpattern").eval().rstrip("/").rsplit("/", 1)[-1]
+        prim_name = prim_basename(node.parm("primpattern").eval())
+        return f"{category}_{prim_name}_{light_name}"
+    elif category == "sopcreate":
+        prim_name = prim_basename(node.parm("pathprefix").eval())
+        return f"{category}_{prim_name}_{light_name}"
+    elif category == "assignmaterial":
+        prim_name = prim_basename(node.parm("primpattern1").eval())
         return f"{category}_{prim_name}_{light_name}"
     else:
         return f"{category}_{light_name}"

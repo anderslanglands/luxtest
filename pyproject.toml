@@ -1,3 +1,23 @@
+[project]
+name = "luxtest"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "av>=14.4.0",
+    "imageio[pyav]>=2.37.0",
+    "moviepy>=2.2.1",
+    "openimageio>=3.0.6.1",
+    "tqdm>=4.67.1",
+    "pefile; sys_platform == 'win32'",
+    "pyelftools; sys_platform == 'linux'",
+]
+
+[dependency-groups]
+usd = ["usd-core>=25.5.1"]
+
+
 [tool.black]
 exclude = '''
 ^/(

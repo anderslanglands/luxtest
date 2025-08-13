@@ -10,17 +10,17 @@ import subprocess
 import sys
 import traceback
 
-
-def does_something(arg1, opt_arg="blah"):
-    print(arg1, opt_arg)
-
-
 THIS_FILE = os.path.abspath(inspect.getsourcefile(lambda: None) or __file__)
 THIS_DIR = os.path.dirname(THIS_FILE)
 
-RENDERS_DIR = os.path.join(THIS_DIR, "renders")
+if THIS_DIR not in sys.path:
+    sys.path.append(THIS_DIR)
 
-RENDERERS = ("embree", "arnold", "karma", "ris")
+import luxtest_utils
+
+from luxtest_const import RENDERERS
+
+RENDER_DIRS = luxtest_utils.get_render_dirs()
 
 INPUT_NAME_RE = re.compile(r"""^iesTest-(?P<renderer>.*)\.(?P<camera>iesTop|iesBottom).(?P<frame>\d{4}).exr$""")
 ###############################################################################
@@ -55,8 +55,12 @@ def combine_ies_test_images(renderers=(), delete=True):
     to_delete = []
     if not renderers:
         renderers = RENDERERS
+    renders_root = luxtest_utils.get_renders_root()
+    env = dict(os.environ)
+    # houdini / hython sets PYTHONHOME, which messes oiiotool up
+    env.pop("PYTHONHOME", "")
     for renderer in renderers:
-        renderer_dir = os.path.join(RENDERS_DIR, renderer)
+        renderer_dir = os.path.join(renders_root, renderer)
 
         top_frames = {}
         bottom_frames = {}
@@ -99,7 +103,7 @@ def combine_ies_test_images(renderers=(), delete=True):
             output_path = os.path.join(renderer_dir, f"iesTest-{renderer}.{frame}.exr")
             args = ["oiiotool", top_path, bottom_path, "--mosaic", "1x2", "-o", output_path]
             print(to_shell_cmd(args), flush=True)
-            subprocess.check_call(args)
+            subprocess.check_call(args, env=env)
             print(f"Output: {output_path}")
             to_delete.append(top_path)
             to_delete.append(bottom_path)
@@ -122,9 +126,15 @@ def get_parser():
     parser.add_argument(
         "-r",
         "--renderers",
-        choices=RENDERERS,
+        # We allow them to CHOOSE any existing render dir (RENDER_DIRS), but by default, only select known renderers
+        # (RENDERERS)
+        choices=RENDER_DIRS,
+        default=RENDERERS,
         nargs="+",
-        help="Only combine images for the given renderers; if not specified, combine images for all renderers.",
+        help=(
+            f"Only combine images from the given render dirs.  If not specified, combine"
+            f" images for all standard renderers."
+        ),
     )
     parser.add_argument(
         "-k", "--keep", action="store_true", help="Keep source half-image files after generating combined image"

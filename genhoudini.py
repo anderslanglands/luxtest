@@ -1,4 +1,4 @@
-#!/usr/bin/env hython
+# no hashbang - use .sh wrapper script
 
 """Render all lights for all renderers in luxtest.hip"""
 
@@ -9,7 +9,9 @@ import re
 import sys
 import traceback
 
-from typing import Iterable, Optional, Tuple
+from typing import TYPE_CHECKING, Iterable, Optional
+
+import luxtest_const
 
 ###############################################################################
 # Constants
@@ -25,23 +27,18 @@ import combine_ies_test_images
 import genLightParamDescriptions
 import luxtest_hou_utils
 
-from genLightParamDescriptions import FrameRange
+from luxtest_const import THIRD_PARTY_RENDERERS
+from luxtest_utils import FrameRange
 
 LUXTEST_HIP = os.path.join(THIS_DIR, "luxtest.hip")
 HUSK_PRE_RENDER = os.path.join(THIS_DIR, "husk_pre_render.py")
 
 HOUDINI_ATTR_RE = re.compile(r"""^\s*[A-Za-z_][A-Za-z_0-9]* houdini:[A-Za-z_][A-Za-z_0-9:]*.*""")
+PREPEND_API_SCHEMAS_RE = re.compile(r"""^(?P<head>\s*prepend\s+apiSchemas = \[)(?P<schemas>.*)(?P<tail>\])""")
 
-# if we can't read light_descriptions, use this
-FALLBACK_LIGHTS = (
-    "cylinder",
-    "disk",
-    "distant",
-    "dome",
-    "rect",
-    "sphere",
-    "visibleRect",
-)
+if TYPE_CHECKING:
+    import hou
+
 
 ###############################################################################
 # Utilities
@@ -59,7 +56,7 @@ def is_ipython():
 def filter_lights(rop_nodes: Iterable["hou.Node"], lights: Iterable[str]):
     if not lights:
         return rop_nodes
-    light_suffixes = tuple(f"_{l}" for l in lights)
+    light_suffixes = tuple(f"_{light}" for light in lights)
     return [x for x in rop_nodes if x.name().endswith(light_suffixes)]
 
 
@@ -114,6 +111,9 @@ def output_usd(lights: Iterable[str] = ()):
     print("=" * 80)
     print()
 
+    def is_houdini_api_schema(schema_str: str):
+        return schema_str.startswith('"Houdini') and schema_str.endswith('API"')
+
     for i, rop_node in enumerate(rop_nodes):
         print(f"Outputing USD node {i + 1}/{num_rops}: {rop_node.name()}")
         rop_node.render()
@@ -122,8 +122,29 @@ def output_usd(lights: Iterable[str] = ()):
         outpath = rop_node.parm("lopoutput").eval()
         with open(outpath, "r", encoding="utf8") as reader:
             lines = reader.readlines()
-        newlines = [x for x in lines if not HOUDINI_ATTR_RE.match(x)]
-        if len(newlines) != len(lines):
+        newlines = []
+        modified = False
+        for line in lines:
+            if HOUDINI_ATTR_RE.match(line):
+                modified = True
+                continue
+            api_schemas_match = PREPEND_API_SCHEMAS_RE.match(line)
+            if api_schemas_match:
+                schemas = api_schemas_match.group("schemas").split(", ")
+                non_houdini_schemas = [x for x in schemas if not is_houdini_api_schema(x)]
+                if not non_houdini_schemas:
+                    continue
+                if len(non_houdini_schemas) != len(schemas):
+                    modified = True
+                    parts = [
+                        api_schemas_match.group("head"),
+                        ", ".join(non_houdini_schemas),
+                        api_schemas_match.group("tail"),
+                    ]
+                    line = "".join(parts)
+
+            newlines.append(line)
+        if modified:
             with open(outpath, "w", encoding="utf8", newline="\n") as writer:
                 writer.writelines(newlines)
 
@@ -133,6 +154,8 @@ def render_images(
     lights: Iterable[str] = (),
     frame_range: Optional[FrameRange] = None,
 ):
+    if not lights:
+        lights = luxtest_const.DEFAULT_LIGHTS
     import hou
 
     usdrender_type = hou.lopNodeTypeCategory().nodeType("usdrender_rop")
@@ -193,14 +216,7 @@ def get_parser():
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
     )
 
-    try:
-        light_descriptions = genLightParamDescriptions.read_descriptions()
-        light_names = sorted(light_descriptions)
-    except Exception as err:
-        print("Error reading light names from light_descriptions.json:")
-        print(err)
-        print("...using fallback light names")
-        light_names = FALLBACK_LIGHTS
+    all_light_names = genLightParamDescriptions.get_all_light_names()
 
     parser.add_argument(
         "hip_file",
@@ -212,24 +228,22 @@ def get_parser():
     parser.add_argument("--no-usd", dest="usd", action="store_false", help="Disable writing out usda files")
     parser.add_argument(
         "-r",
-        "--renderer",
-        choices=("karma", "ris", "arnold"),
-        action="append",
-        dest="renderers",
-        help=(
-            "Only render images for the given renderer; if not"
-            " specified, render images for all renderers. May be"
-            " repeated."
-        ),
+        "--renderers",
+        choices=THIRD_PARTY_RENDERERS,
+        nargs="+",
+        default=THIRD_PARTY_RENDERERS,
+        help="Only render images for the given renderer(s); if not specified, render images for all renderers.",
     )
     parser.add_argument(
         "-l",
-        "--light",
-        choices=light_names,
-        action="append",
-        dest="lights",
+        "--lights",
+        metavar="LIGHT",
+        choices=all_light_names,
+        nargs="+",
         help=(
-            "Only render images for the given lights; if not specified, render images for all lights. May be repeated."
+            f"Only export .usda files and render images for the given light(s). Choices: {all_light_names}.  If"
+            " notspecified, the default is to export all .usda for all lights, and only render these lights by"
+            f" default: {luxtest_const.DEFAULT_LIGHTS}"
         ),
     )
     parser.add_argument(
